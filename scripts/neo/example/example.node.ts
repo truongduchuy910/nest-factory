@@ -1,37 +1,37 @@
 /**
- * 📌 NEO_4_J TYPE DEFINE
+ * 📌 EXAMPLE TYPE DEFINE
  */
 
 import gql from 'graphql-tag';
 import { Injectable } from '@nestjs/common';
-import { Neo4jEntity } from './neo4j.entity';
+import { ExampleEntity } from './example.entity';
 import { Neo4j } from 'libs/nest-nepa/src/neo4j.node';
 
 /**
- * typeDefs should implements base on neo4j.interface.ts
+ * typeDefs should implements base on example.interface.ts
  */
 
 export const typeDefs = gql`
-  type Neo4j
+  type Example
     @fulltext(indexes: [{ indexName: "text", fields: ["createdBy"] }]) {
-    " neo4j identity "
+    " example identity "
     id: ID @id
     " created at "
-    createdAt: DateTime
+    createdAt: DateTime @unique
     " created by "
-    createdBy: String
+    createdBy: String @unique
     " number "
-    number: Float
+    number: Float @unique
   }
 `;
 
 /**
- * 📌 NEO_4_J NEO4J
+ * 📌 EXAMPLE NEO4J
  */
 
 @Injectable()
-export class Neo4jNeo4j extends Neo4j {
-  fieldMany = 'neo4js';
+export class ExampleNeo4j extends Neo4j {
+  fieldMany = 'examples';
   selectionSet = gql`
     {
       id
@@ -41,6 +41,6 @@ export class Neo4jNeo4j extends Neo4j {
     }
   `;
   toEntity(node: any) {
-    return new Neo4jEntity(node);
+    return new ExampleEntity(node);
   }
 }

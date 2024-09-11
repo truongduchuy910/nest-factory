@@ -95,27 +95,27 @@ services:
   #       target: /app/prisma
   #   env_file: './.env'
 
-  factory:
-    image: localhost:32000/truongduchuy910/factory:local
-    container_name: factory
-    networks:
-      - backend
-    # depends_on:
-    #   migration:
-    #     condition: service_completed_successfully
-    build:
-      context: .
-      target: dev
-    volumes:
-      - type: bind
-        source: src
-        target: /app/src
-      - type: bind
-        source: prisma
-        target: /app/prisma
-    env_file: './.env'
-    ports:
-      - 3000:3000
+  # factory:
+  #   image: localhost:32000/truongduchuy910/factory:local
+  #   container_name: factory
+  #   networks:
+  #     - backend
+  #   # depends_on:
+  #   #   migration:
+  #   #     condition: service_completed_successfully
+  #   build:
+  #     context: .
+  #     target: dev
+  #   volumes:
+  #     - type: bind
+  #       source: src
+  #       target: /app/src
+  #     - type: bind
+  #       source: prisma
+  #       target: /app/prisma
+  #   env_file: './.env'
+  #   ports:
+  #     - 3000:3000
 
 networks:
   backend:

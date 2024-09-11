@@ -1,8 +1,8 @@
 /**
- * 📌 NEO_4_J INTERFACE
+ * 📌 NEO INTERFACE
  */
 
-export interface Neo4jInterface {
+export interface NeoInterface {
   /* identity */
   id?: string;
   /* label */

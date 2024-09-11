@@ -19,13 +19,13 @@ export const MONGO_NAME = 'mongo';
   collection: MONGO_NAME,
 })
 export class MongoSchema {
-  @Prop({ required: false, index: 'text' })
+  @Prop({ required: false, index: 'text', unique: true })
   string?: String;
 
-  @Prop({ required: false })
+  @Prop({ required: false, unique: true })
   date?: Date;
 
-  @Prop({ required: false })
+  @Prop({ required: false, unique: true })
   number?: Number;
 }
 

@@ -1,5 +1,5 @@
 /**
- * 📌 NEO_4_J ARGS
+ * 📌 NEO ARGS
  */
 
 import {
@@ -12,35 +12,35 @@ import {
 import { PagingInput } from 'nest-nepa';
 import { isEmpty, pickBy } from 'lodash';
 
-import { Neo4jEntity } from './neo4j.entity';
+import { NeoEntity } from './neo.entity';
 
-@InputType({ description: 'neo4j entity general input' })
-export class Neo4jInputType extends PartialType(
-  PickType(Neo4jEntity, ['id', 'createdBy', 'createdAt', 'number'] as const),
+@InputType({ description: 'neo entity general input' })
+export class NeoInputType extends PartialType(
+  PickType(NeoEntity, ['id', 'createdBy', 'createdAt', 'number'] as const),
   InputType,
 ) {}
 
-@InputType({ description: 'neo4j entity create input' })
-export class Neo4jCreateInputType extends PartialType(
-  PickType(Neo4jInputType, ['createdBy', 'createdAt', 'number'] as const),
+@InputType({ description: 'neo entity create input' })
+export class NeoCreateInputType extends PartialType(
+  PickType(NeoInputType, ['createdBy', 'createdAt', 'number'] as const),
   InputType,
 ) {}
 
-@InputType({ description: 'neo4j entity update input' })
-export class Neo4jUpdateInput extends PartialType(
-  PickType(Neo4jInputType, ['number'] as const),
+@InputType({ description: 'neo entity update input' })
+export class NeoUpdateInput extends PartialType(
+  PickType(NeoInputType, ['number'] as const),
   InputType,
 ) {}
 
-@InputType({ description: 'neo4j entity where input' })
-export class Neo4jWhereInput extends PartialType(
-  PickType(Neo4jInputType, ['id'] as const),
+@InputType({ description: 'neo entity where input' })
+export class NeoWhereInput extends PartialType(
+  PickType(NeoInputType, ['id'] as const),
   InputType,
 ) {
   /**
    * convert to neo4j filter
    */
-  static toFilter(where: Neo4jWhereInput | undefined) {
+  static toFilter(where: NeoWhereInput | undefined) {
     const filter = {} as any;
     if (where?.id) {
       filter.id = where.id;
@@ -85,12 +85,12 @@ export class Neo4jWhereInput extends PartialType(
   }
 }
 
-@InputType({ description: 'neo4j entity index input' })
-export class Neo4jIndexInput extends PartialType(
-  PickType(Neo4jInputType, ['id'] as const),
+@InputType({ description: 'neo entity index input' })
+export class NeoIndexInput extends PartialType(
+  PickType(NeoInputType, ['id'] as const),
   InputType,
 ) {
-  static toFilter(index: Neo4jIndexInput | undefined) {
+  static toFilter(index: NeoIndexInput | undefined) {
     let filter: any = {};
     if (index?.id) {
       filter.id = index.id;
@@ -98,7 +98,7 @@ export class Neo4jIndexInput extends PartialType(
 
     const resolvedData = pickBy(filter);
     if (isEmpty(resolvedData)) {
-      throw new Error('Neo4jIndexInput cannot empty');
+      throw new Error('NeoIndexInput cannot empty');
     }
     return resolvedData;
   }
@@ -109,15 +109,15 @@ export class Neo4jIndexInput extends PartialType(
  */
 
 @ArgsType()
-export class FindOneNeo4jArgs {
+export class FindOneNeoArgs {
   @Field()
-  index: Neo4jIndexInput;
+  index: NeoIndexInput;
 }
 
 @ArgsType()
-export class FindManyNeo4jArgs {
+export class FindManyNeoArgs {
   @Field({ nullable: true })
-  where: Neo4jWhereInput;
+  where: NeoWhereInput;
 
   @Field({ nullable: true })
   paging: PagingInput;
@@ -130,22 +130,22 @@ export class FindManyNeo4jArgs {
 }
 
 @ArgsType()
-export class CreateOneNeo4jArgs {
+export class CreateOneNeoArgs {
   @Field()
-  data: Neo4jCreateInputType;
+  data: NeoCreateInputType;
 }
 
 @ArgsType()
-export class UpdateOneNeo4jArgs {
+export class UpdateOneNeoArgs {
   @Field()
-  index: Neo4jIndexInput;
+  index: NeoIndexInput;
 
   @Field()
-  data: Neo4jUpdateInput;
+  data: NeoUpdateInput;
 }
 
 @ArgsType()
-export class DeleteOneNeo4jArgs {
+export class DeleteOneNeoArgs {
   @Field()
-  index: Neo4jIndexInput;
+  index: NeoIndexInput;
 }

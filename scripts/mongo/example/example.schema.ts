@@ -19,13 +19,13 @@ export const EXAMPLE_NAME = 'example';
   collection: EXAMPLE_NAME,
 })
 export class ExampleSchema {
-  @Prop({ required: false, index: 'text' })
+  @Prop({ required: false, index: 'text', unique: true })
   string?: String;
 
-  @Prop({ required: false })
+  @Prop({ required: false, unique: true })
   date?: Date;
 
-  @Prop({ required: false })
+  @Prop({ required: false, unique: true })
   number?: Number;
 }
 

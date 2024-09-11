@@ -18,28 +18,28 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "nest-mopa": [
-        "libs/nest-mopa/src"
-      ],
-      "nest-nepa": [
-        "libs/nest-nepa/src"
-      ],
       "schema": [
         "libs/schema/src"
       ],
       "@e2e/*": [
         "./e2e/*"
       ],
-      "@app/nest-pgpa": [
+      "nest-mopa": [
+        "libs/nest-mopa/src"
+      ],
+      "nest-nepa": [
+        "libs/nest-nepa/src"
+      ],
+      "nest-pgpa": [
         "libs/nest-pgpa/src"
       ],
-      "@app/nest-pgpa/*": [
+      "nest-pgpa/*": [
         "libs/nest-pgpa/src/*"
       ],
-      "@app/nest-ogm": [
+      "nest-ogm": [
         "libs/nest-ogm/src"
       ],
-      "@app/nest-ogm/*": [
+      "nest-ogm/*": [
         "libs/nest-ogm/src/*"
       ]
     }

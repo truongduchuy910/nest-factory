@@ -1,5 +1,5 @@
 /**
- * 📌 NEO ENTITY
+ * 📌 NEO_4_J ENTITY
  */
 
 import {
@@ -11,15 +11,15 @@ import {
 } from '@nestjs/graphql';
 import { pickBy } from 'lodash';
 
-import { NeoInterface } from './neo.interface';
+import { Neo4jInterface } from './neo4j.interface';
 import { PagingEntity } from 'nest-nepa';
 
 @ObjectType({
-  description: 'Type of neo entity. Base on neo interface.',
+  description: 'Type of neo4j entity. Base on neo4j interface.',
 })
 @Directive(`@key(fields: "id")`)
-export class NeoEntity implements NeoInterface {
-  static nodeName = 'Neo';
+export class Neo4jEntity implements Neo4jInterface {
+  static nodeName = 'Neo4j';
   @Field(() => ID, { nullable: false })
   id?: string;
 
@@ -49,7 +49,7 @@ export class NeoEntity implements NeoInterface {
    * only attributes
    */
 
-  lean(): NeoInterface {
+  lean(): Neo4jInterface {
     return {
       id: this.id,
       createdAt: this.createdAt,
@@ -79,10 +79,10 @@ export class NeoEntity implements NeoInterface {
   }
 }
 
-@ObjectType({ description: 'Type of neo entity list response' })
-export class ManyNeo {
-  @Field(() => [NeoEntity], { defaultValue: [] })
-  data: Array<NeoEntity>;
+@ObjectType({ description: 'Type of neo4j entity list response' })
+export class ManyNeo4j {
+  @Field(() => [Neo4jEntity], { defaultValue: [] })
+  data: Array<Neo4jEntity>;
 
   @Field({ nullable: true })
   paging: PagingEntity;

@@ -3,9 +3,12 @@
     "node": "20"
   },
   "scripts": {
-    "format": "prettier --write \"**/*.ts\" \"libs/**/*.ts\" \"package.json\"",
-    "start:dev": "cp .env.localhost .env; node ./scripts/mongo-crud mongo src; node ./scripts/neo4j neo src; npm run format; nest start --watch",
-    "test": "jest --watch"
+    "format": "prettier --write \"**/*.ts\"",
+    "start:dev": "nest start --watch",
+    "test": "jest --watch",
+    "gen:mongo": "node ./scripts/mongo mongo src",
+    "gen:neo4j": "node ./scripts/neo4j neo4j src",
+    "gen": "bash ./scripts/gen.sh"
   },
   "main": "dist/main.js",
   "dependencies": {

@@ -2,11 +2,9 @@
  * 📌 EXAMPLE ENTITY
  */
 
-import { PagingEntity } from 'nemopa';
+import { PagingEntity } from 'nest-mopa';
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { ExampleSchema } from './example.schema';
-
-// import { PagingEntity } from "../common/entities";
 
 @ObjectType()
 export class ExampleEntity extends ExampleSchema {
@@ -14,20 +12,27 @@ export class ExampleEntity extends ExampleSchema {
   id?: string;
 
   @Field(() => String, { nullable: true })
-  label?: string;
+  string?: string;
 
-  @Field(() => GraphQLISODateTime, { nullable: true })
-  createdAt?: Date;
+  @Field(() => GraphQLISODateTime, {
+    nullable: true,
+  })
+  date?: Date;
 
-  @Field(() => GraphQLISODateTime, { nullable: true })
-  updatedAt?: Date;
+  @Field(() => Number, {
+    nullable: true,
+  })
+  number?: number;
 }
 
 @ObjectType()
 export class ManyExampleEntity {
-  @Field(() => [ExampleEntity], { defaultValue: [] })
+  @Field(() => [ExampleEntity], {
+    defaultValue: [],
+    description: 'data return as array',
+  })
   data: Array<ExampleEntity>;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'pagination' })
   paging: PagingEntity;
 }

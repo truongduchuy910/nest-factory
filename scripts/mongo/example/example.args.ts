@@ -9,32 +9,26 @@ import {
   PartialType,
   PickType,
 } from '@nestjs/graphql';
-import { ExampleEntity } from './example.entity';
 import { Types } from 'mongoose';
 import { isEmpty, pickBy } from 'lodash';
-import { PagingInput } from 'nemopa';
+import { PagingInput } from 'nest-mopa';
+import { ExampleEntity } from './example.entity';
 
 @InputType({ description: 'Example Public InputType' })
-export class ExampleInput extends PartialType(
-  PickType(ExampleEntity, ['id', 'label'] as const),
+export class ExampleInputType extends PartialType(
+  PickType(ExampleEntity, ['id', 'string', 'date', 'number'] as const),
   InputType,
 ) {}
 
 @InputType({ description: 'Example create Public InputType.' })
 export class ExampleCreateInputType extends PartialType(
-  PickType(ExampleInput, ['label'] as const),
-  InputType,
-) {}
-
-@InputType({ description: 'Example update Public InputType.' })
-export class ExampleUpdateInputType extends PartialType(
-  PickType(ExampleInput, ['label'] as const),
+  PickType(ExampleInputType, ['string', 'date', 'number'] as const),
   InputType,
 ) {}
 
 @InputType({ description: 'Example where Public InputType' })
 export class ExampleWhereInputType extends PartialType(
-  PickType(ExampleInput, ['id'] as const),
+  PickType(ExampleInputType, ['id', 'string', 'date', 'number'] as const),
   InputType,
 ) {
   /**
@@ -47,14 +41,53 @@ export class ExampleWhereInputType extends PartialType(
     }
     return pickBy(filter);
   }
+
+  static toSort(key: string) {
+    const map = {
+      string_ASC: {
+        key: 'string',
+        keyBuilder: (value: any) => `${value}`,
+        keyOrder: 1,
+      },
+      string_DESC: {
+        key: 'string',
+        keyBuilder: (value: any) => `${value}`,
+        keyOrder: -1,
+      },
+      number_ASC: {
+        key: 'number',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: 1,
+      },
+      number_DESC: {
+        key: 'number',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: -1,
+      },
+      date_ASC: {
+        key: 'date',
+        keyBuilder: (value: any) => new Date(value),
+        keyOrder: 1,
+      },
+      date_DESC: {
+        key: 'date',
+        keyBuilder: (value: any) => new Date(value),
+        keyOrder: -1,
+      },
+    };
+    return map[key] || {};
+  }
 }
 
 @InputType({ description: 'Example index Public InputType' })
-export class ExampleIndexInput extends PartialType(
+export class ExampleIndexInputType extends PartialType(
   PickType(ExampleEntity, ['id'] as const),
   InputType,
 ) {
-  static toFilter(index: ExampleIndexInput | undefined) {
+  /**
+   * convert to mongo filter
+   */
+  static toFilter(index: ExampleIndexInputType | undefined) {
     const filter = {} as any;
     if (index?.id) {
       filter._id = new Types.ObjectId(index.id);
@@ -62,7 +95,7 @@ export class ExampleIndexInput extends PartialType(
 
     const resolvedData = pickBy(filter);
     if (isEmpty(resolvedData)) {
-      throw new Error('ExampleIndexInput cannot empty');
+      throw new Error('ExampleIndexInputType cannot empty');
     }
     return resolvedData;
   }
@@ -73,37 +106,28 @@ export class ExampleIndexInput extends PartialType(
  */
 
 @ArgsType()
-export class FindOneExampleArgs {
-  @Field()
-  index: ExampleIndexInput;
-}
-
-@ArgsType()
-export class FindManyExampleArgs {
-  @Field({ nullable: true })
-  where: ExampleWhereInputType;
-
-  @Field({ nullable: true })
-  paging: PagingInput;
-}
-
-@ArgsType()
-export class CreateOneExample {
+export class CreateOneExampleArgs {
   @Field()
   data: ExampleCreateInputType;
 }
 
 @ArgsType()
-export class UpdateOneExampleArgs {
+export class FindOneExampleArgs {
   @Field()
-  index: ExampleIndexInput;
-
-  @Field()
-  data: ExampleUpdateInputType;
+  index: ExampleIndexInputType;
 }
 
 @ArgsType()
-export class DeleteOneExampleArgs {
-  @Field()
-  index: ExampleIndexInput;
+export class FindManyExampleArgs {
+  @Field({ nullable: true })
+  where?: ExampleWhereInputType;
+
+  @Field({ nullable: true })
+  paging?: PagingInput;
+
+  @Field({ nullable: true })
+  sortBy?: string;
+
+  @Field({ nullable: true })
+  search?: string;
 }

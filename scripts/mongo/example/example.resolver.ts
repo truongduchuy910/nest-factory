@@ -3,27 +3,23 @@
  */
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 
 import { ExampleEntity, ManyExampleEntity } from './example.entity';
 import {
-  CreateOneExample,
-  DeleteOneExampleArgs,
-  ExampleIndexInput,
+  CreateOneExampleArgs,
+  ExampleIndexInputType,
   ExampleWhereInputType,
   FindManyExampleArgs,
   FindOneExampleArgs,
-  UpdateOneExampleArgs,
 } from './example.args';
 import { ExampleService } from './example.service';
 import { ExampleDocument } from './example.schema';
-import { GqlIAMGuard } from 'src/guard/iam.guard';
-import { GqlThrottlerGuard } from 'src/guard/throttler.guard';
 
 @Resolver(() => ExampleEntity)
 export class ExampleResolver {
-  private readonly logger = new Logger(ExampleResolver.name);
+  readonly logger = new Logger(ExampleResolver.name);
 
   model: Model<ExampleDocument>;
 
@@ -31,52 +27,39 @@ export class ExampleResolver {
     this.model = this.service.getModel();
   }
 
-  @UseGuards(GqlThrottlerGuard, GqlIAMGuard)
   @Mutation(() => ExampleEntity, { nullable: true })
-  async createOneExample(@Args() args: CreateOneExample) {
+  async createOneExample(@Args() args: CreateOneExampleArgs) {
     const created = await this.model.create(args.data);
     return created;
   }
 
-  @UseGuards(GqlThrottlerGuard, GqlIAMGuard)
-  @Query(() => ExampleEntity, { nullable: true })
+  @Query(() => ExampleEntity, {
+    nullable: true,
+    description: 'find one example',
+  })
   async findOneExample(@Args() args: FindOneExampleArgs) {
     const { index } = args;
-    const filter = ExampleIndexInput.toFilter(index);
-    const one = await this.model.findOne(filter);
+    const filter = ExampleIndexInputType.toFilter(index);
+    const one = await this.service.findOne({ filter });
     return one;
   }
 
-  @UseGuards(GqlThrottlerGuard, GqlIAMGuard)
-  @Query(() => ManyExampleEntity, { nullable: true })
+  @Query(() => ManyExampleEntity, {
+    nullable: true,
+    description: 'find many example',
+  })
   async findManyExample(@Args() args: FindManyExampleArgs) {
-    const { where } = args;
+    const { where, paging, sortBy, search } = args;
     const filter = ExampleWhereInputType.toFilter(where);
+    const sort = ExampleWhereInputType.toSort(sortBy);
+
     const many = await this.service.findMany({
       filter,
-      paging: args.paging,
+      paging,
+      sort,
+      search,
     });
+
     return many;
-  }
-
-  @UseGuards(GqlThrottlerGuard, GqlIAMGuard)
-  @Mutation(() => ExampleEntity, { nullable: true })
-  async updateOneExample(@Args() args: UpdateOneExampleArgs) {
-    const { index } = args;
-    const filter = ExampleIndexInput.toFilter(index);
-    const updated = await this.model.findOneAndUpdate(filter, args.data, {
-      new: true,
-    });
-    return updated;
-  }
-
-  @UseGuards(GqlThrottlerGuard, GqlIAMGuard)
-  @Mutation(() => ExampleEntity, { nullable: true })
-  async deleteOneExample(@Args() args: DeleteOneExampleArgs) {
-    this.logger.debug(`deleteOneExample ${args?.index?.id}`);
-    const { index } = args;
-    const filter = ExampleIndexInput.toFilter(index);
-    const deleted = await this.model.findOneAndDelete(filter);
-    return deleted;
   }
 }

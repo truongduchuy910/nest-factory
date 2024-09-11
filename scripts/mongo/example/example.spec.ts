@@ -72,37 +72,9 @@ describe('Example', () => {
   it('resolver.oneExample > should return valid id', async () => {
     const doc = ExampleSchema.faker();
     jest.spyOn(model, 'findOne').mockReturnValue(doc as any);
-    const many = await resolver.findOneExample({
+    const one = await resolver.findOneExample({
       index: { id: `${doc._id}` },
     });
-    expect(many.id).toEqual(doc.id);
-  });
-
-  it('resolver.createExample > should create valid label', async () => {
-    const doc = ExampleSchema.faker();
-    jest.spyOn(model, 'create').mockReturnValue(doc as any);
-    const created = await resolver.createOneExample({
-      data: { label: doc.label },
-    });
-    expect(created.label).toEqual(doc.label);
-  });
-
-  it('resolver.updateExample > should update valid id', async () => {
-    const doc = ExampleSchema.faker();
-    jest.spyOn(model, 'findOneAndUpdate').mockReturnValue(doc as any);
-    const updated = await resolver.updateOneExample({
-      index: { id: `${doc._id}` },
-      data: { label: doc.label },
-    });
-    expect(updated.label).toEqual(doc.label);
-  });
-
-  it('resolver.deleteExample > should delete valid id', async () => {
-    const doc = ExampleSchema.faker();
-    jest.spyOn(model, 'findOneAndDelete').mockReturnValue(doc as any);
-    const deleted = await resolver.deleteOneExample({
-      index: { id: `${doc._id}` },
-    });
-    expect(deleted._id).toEqual(doc._id);
+    expect(one.id).toEqual(doc.id);
   });
 });

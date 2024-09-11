@@ -2,11 +2,11 @@
  * 📌 EXAMPLE SERVICE
  */
 
-import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 import { ExampleCRUD, ExampleDocument, ExampleSchema } from './example.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class ExampleService extends ExampleCRUD {

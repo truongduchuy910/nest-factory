@@ -1,0 +1,50 @@
+{
+  "projects": {
+    "schema": {
+      "type": "library",
+      "root": "libs/schema",
+      "entryFile": "index",
+      "sourceRoot": "libs/schema/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/schema/tsconfig.lib.json"
+      }
+    },
+    "nest-mopa": {
+      "type": "library",
+      "root": "libs/nest-mopa",
+      "entryFile": "index",
+      "sourceRoot": "libs/nest-mopa/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/nest-mopa/tsconfig.lib.json"
+      }
+    },
+    "nest-nepa": {
+      "type": "library",
+      "root": "libs/nest-nepa",
+      "entryFile": "index",
+      "sourceRoot": "libs/nest-nepa/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/nest-nepa/tsconfig.lib.json"
+      }
+    },
+    "nest-pgpa": {
+      "type": "library",
+      "root": "libs/nest-pgpa",
+      "entryFile": "index",
+      "sourceRoot": "libs/nest-pgpa/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/nest-pgpa/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "assets": [
+      "**/*.proto",
+      "**/*.json",
+      "**/*.d.ts"
+    ],
+    "builder": "swc"
+  }
+}

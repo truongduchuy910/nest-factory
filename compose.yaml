@@ -1,0 +1,121 @@
+name: factory
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    volumes:
+      - type: bind
+        source: ./volumes/postgres/data
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: ./volumes/postgres/shm
+        target: /dev/shm
+        bind:
+          create_host_path: true
+    environment:
+      POSTGRES_DB: factory
+      POSTGRES_USER: factory
+      POSTGRES_PASSWORD: this.is.password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4g
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U factory']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: always
+
+  neo4j:
+    image: neo4j:5.13.0
+    container_name: neo4j
+    volumes:
+      - ./volumes/neo4j/data:/data
+      - ./volumes/neo4j/plugins:/plugins
+    environment:
+      - NEO4J_AUTH=neo4j/this.is.password
+      - NEO4J_PLUGINS=["apoc"]
+    networks:
+      - backend
+    ports:
+      - 7474:7474
+      - 7687:7687
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: always
+
+  mongo:
+    image: mongo:5.0.26
+    container_name: mongo
+    volumes:
+      - ./volumes/mongo:/data/db
+    networks:
+      - backend
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 8s
+      retries: 5
+    restart: always
+
+  # migration:
+  #   image: localhost:32000/truongduchuy910/factory:local-migr
+  #   container_name: migration
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   build:
+  #     context: .
+  #     target: migr
+  #   volumes:
+  #     - type: bind
+  #       source: prisma
+  #       target: /app/prisma
+  #   env_file: './.env'
+
+  factory:
+    image: localhost:32000/truongduchuy910/factory:local
+    container_name: factory
+    networks:
+      - backend
+    # depends_on:
+    #   migration:
+    #     condition: service_completed_successfully
+    build:
+      context: .
+      target: dev
+    volumes:
+      - type: bind
+        source: src
+        target: /app/src
+      - type: bind
+        source: prisma
+        target: /app/prisma
+    env_file: './.env'
+    ports:
+      - 3000:3000
+
+networks:
+  backend:

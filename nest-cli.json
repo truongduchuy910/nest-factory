@@ -35,6 +35,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/nest-pgpa/tsconfig.lib.json"
       }
+    },
+    "nest-ogm": {
+      "type": "library",
+      "root": "libs/nest-ogm",
+      "entryFile": "index",
+      "sourceRoot": "libs/nest-ogm/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/nest-ogm/tsconfig.lib.json"
+      }
     }
   },
   "compilerOptions": {

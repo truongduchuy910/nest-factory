@@ -35,6 +35,12 @@
       ],
       "@app/nest-pgpa/*": [
         "libs/nest-pgpa/src/*"
+      ],
+      "@app/nest-ogm": [
+        "libs/nest-ogm/src"
+      ],
+      "@app/nest-ogm/*": [
+        "libs/nest-ogm/src/*"
       ]
     }
   }

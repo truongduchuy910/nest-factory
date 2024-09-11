@@ -7,3 +7,6 @@
 [submodule "libs/nest-pgpa"]
 	path = libs/nest-pgpa
 	url = git@github.com:truongduchuy910/nest-pgpa.git
+[submodule "libs/nest-ogm"]
+	path = libs/nest-ogm
+	url = git@github.com:truongduchuy910/nest-ogm.git

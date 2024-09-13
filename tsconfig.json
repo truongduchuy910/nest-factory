@@ -41,6 +41,12 @@
       ],
       "nest-ogm/*": [
         "libs/nest-ogm/src/*"
+      ],
+      "nest-gfc": [
+        "libs/nest-gfc/src"
+      ],
+      "nest-gfc/*": [
+        "libs/nest-gfc/src/*"
       ]
     }
   }

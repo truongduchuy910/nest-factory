@@ -44,6 +44,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/nest-ogm/tsconfig.lib.json"
       }
+    },
+    "nest-gfc": {
+      "type": "library",
+      "root": "libs/nest-gfc",
+      "entryFile": "index",
+      "sourceRoot": "libs/nest-gfc/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/nest-gfc/tsconfig.lib.json"
+      }
     }
   },
   "compilerOptions": {

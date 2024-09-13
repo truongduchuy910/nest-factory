@@ -5,14 +5,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
-
 import { ExampleEntity, ManyExampleEntity } from './example.entity';
 import {
   CreateOneExampleArgs,
-  ExampleIndexInputType,
-  ExampleWhereInputType,
   FindManyExampleArgs,
   FindOneExampleArgs,
+  UpdateOneExampleArgs,
 } from './example.args';
 import { ExampleService } from './example.service';
 import { ExampleDocument } from './example.schema';
@@ -28,9 +26,26 @@ export class ExampleResolver {
   }
 
   @Mutation(() => ExampleEntity, { nullable: true })
+  async updateOneExample(@Args() args: UpdateOneExampleArgs) {
+    const { filter, input } = UpdateOneExampleArgs.convert(args);
+    const updated = await this.model.findOneAndUpdate(filter, input, {
+      new: true,
+    });
+    return updated.toEntity();
+  }
+
+  @Mutation(() => ExampleEntity, { nullable: true })
   async createOneExample(@Args() args: CreateOneExampleArgs) {
-    const created = await this.model.create(args.data);
-    return created;
+    const { input } = CreateOneExampleArgs.convert(args);
+    const created = await this.model.create(input);
+    return created.toEntity();
+  }
+
+  @Mutation(() => ExampleEntity, { nullable: true })
+  async deleteOneExample(@Args() args: FindOneExampleArgs) {
+    const { filter } = FindOneExampleArgs.convert(args);
+    const deleted = await this.model.findOneAndDelete(filter, { new: true });
+    return deleted.toEntity();
   }
 
   @Query(() => ExampleEntity, {
@@ -38,8 +53,7 @@ export class ExampleResolver {
     description: 'find one example',
   })
   async findOneExample(@Args() args: FindOneExampleArgs) {
-    const { index } = args;
-    const filter = ExampleIndexInputType.toFilter(index);
+    const { filter } = FindOneExampleArgs.convert(args);
     const one = await this.service.findOne({ filter });
     return one;
   }
@@ -49,10 +63,7 @@ export class ExampleResolver {
     description: 'find many example',
   })
   async findManyExample(@Args() args: FindManyExampleArgs) {
-    const { where, paging, sortBy, search } = args;
-    const filter = ExampleWhereInputType.toFilter(where);
-    const sort = ExampleWhereInputType.toSort(sortBy);
-
+    const { filter, paging, sort, search } = FindManyExampleArgs.convert(args);
     const many = await this.service.findMany({
       filter,
       paging,

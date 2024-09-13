@@ -1,29 +1,27 @@
-import {
-  createOneMongo,
-  deleteOneMongo,
-  updateOneMongo,
-} from './mutation/mongo';
+import { createOneNeo, deleteOneNeo, updateOneNeo } from './mutation/neo';
 import { customAlphabet } from 'nanoid';
-import { findManyMongo, findOneMongo } from './query/mongo';
-import { Types } from 'mongoose';
+import { findManyNeo, findOneNeo } from './query/neo';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('create', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
-  const data = {
-    id: new Types.ObjectId(),
+  let data = {
+    id: null,
     string: nanoid(),
     date: new Date(),
     number: Date.now(),
   };
 
   beforeAll(async () => {
-    await createOneMongo({
+    delete data.id;
+    const created = await createOneNeo({
       data,
     });
+    data.id = created.id;
   });
 
   test('read one', async () => {
-    const one = await findOneMongo({
+    const one = await findOneNeo({
       index: { id: data.id },
       label: 'after create',
     });
@@ -34,7 +32,7 @@ describe('create', () => {
   });
 
   test('read many', async () => {
-    const many = await findManyMongo({ where: { id: data.id } });
+    const many = await findManyNeo({ where: { id: data.id } });
     expect(many.paging.count).toBe(1);
     expect(many.paging.next).not.toBeTruthy();
     const [first] = many.data;
@@ -47,7 +45,7 @@ describe('create', () => {
   describe('update', () => {
     const content = nanoid();
     beforeAll(async () => {
-      await updateOneMongo({
+      await updateOneNeo({
         data: { string: content },
         index: {
           id: data.id.toString(),
@@ -55,7 +53,7 @@ describe('create', () => {
       });
     });
     test('read', async () => {
-      const after = await deleteOneMongo({
+      const after = await deleteOneNeo({
         index: { id: data.id },
       });
       expect(after.string).toBe(content);
@@ -64,7 +62,7 @@ describe('create', () => {
     describe('delete', () => {
       beforeAll(async () => {});
       test('read', async () => {
-        const one = await findOneMongo({ index: { id: data.id } });
+        const one = await findOneNeo({ index: { id: data.id } });
         expect(one).not.toBeTruthy();
       });
     });

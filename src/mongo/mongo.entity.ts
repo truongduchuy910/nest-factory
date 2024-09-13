@@ -2,7 +2,7 @@
  * 📌 MONGO ENTITY
  */
 
-import { PagingEntity } from 'nest-mopa';
+import { PagingEntity } from 'nest-gfc';
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { MongoSchema } from './mongo.schema';
 

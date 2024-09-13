@@ -5,7 +5,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { HydratedDocument, Model } from 'mongoose';
-import { FindManyProps, Paging } from 'nest-mopa';
+import { Paging } from 'nest-mopa';
+import { FindManyProps } from 'nest-gfc';
 
 interface FindOneProps {
   filter: any;
@@ -27,6 +28,10 @@ export class MongoSchema {
 
   @Prop({ required: false, unique: true })
   number?: Number;
+
+  toEntity() {
+    return this;
+  }
 }
 
 export const MongoSchemaFactory = SchemaFactory.createForClass(MongoSchema);
@@ -106,7 +111,11 @@ export class MongoCRUD {
     const skip = Number(props?.paging?.offset);
 
     if (limit > 100) throw new Error('rate limit');
-    let many = await this.model.find(filter).sort(sort).limit(limit).skip(skip);
+    let many = await this.model
+      .find(filter)
+      .sort(sort as any)
+      .limit(limit)
+      .skip(skip);
 
     let data = await build(many, this.model);
     return data;

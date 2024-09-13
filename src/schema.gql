@@ -22,4 +22,216 @@ directive @shareable on FIELD_DEFINITION | OBJECT
 
 directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
 
+input CursorInput {
+  """
+  This is the cursor that points to the start of the page of data that has been returned.
+  """
+  after: String
+
+  """
+  This is the cursor that points to the end of the page of data that has been returned.
+  """
+  before: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ManyMongoEntity {
+  """data return as array"""
+  data: [MongoEntity!]!
+
+  """pagination"""
+  paging: PagingEntity
+}
+
+"""Type of neo entity list response"""
+type ManyNeo {
+  data: [NeoEntity!]!
+  paging: PagingEntity
+}
+
+"""Mongo create Public InputType."""
+input MongoCreateInputType {
+  date: DateTime
+  id: ID
+  number: Float
+  string: String
+}
+
+type MongoEntity {
+  date: DateTime
+  id: ID!
+  number: Float
+  string: String
+}
+
+"""Mongo index Public InputType"""
+input MongoIndexInputType {
+  id: ID
+}
+
+"""Mongo create Public InputType."""
+input MongoUpdateInputType {
+  date: DateTime
+  id: ID
+  number: Float
+  string: String
+}
+
+"""Mongo where Public InputType"""
+input MongoWhereInputType {
+  date: DateTime
+  id: ID
+  number: Float
+  string: String
+}
+
+type Mutation {
+  createOneMongo(data: MongoCreateInputType!): MongoEntity
+
+  """create one neo"""
+  createOneNeo(data: NeoCreateInputType!): NeoEntity
+  deleteOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
+  deleteOneNeo(index: NeoIndexInputType!): NeoEntity
+  updateOneMongo(data: MongoUpdateInputType!, index: MongoIndexInputType!): MongoEntity
+  updateOneNeo(data: NeoUpdateInputType!, index: NeoIndexInputType!): NeoEntity
+}
+
+"""neo entity create input"""
+input NeoCreateInputType {
+  createdAt: DateTime = "2024-09-13T08:26:29.202Z"
+  createdBy: String
+  date: DateTime
+  number: Float
+  string: String
+}
+
+"""Type of neo entity. Base on neo interface."""
+type NeoEntity {
+  createdAt: DateTime
+  createdBy: String
+  date: DateTime
+  id: ID
+  number: Float
+  string: String
+}
+
+"""neo entity index input"""
+input NeoIndexInputType {
+  id: ID
+}
+
+"""neo entity update input"""
+input NeoUpdateInputType {
+  date: DateTime
+  number: Float
+  string: String
+}
+
+"""neo entity where input"""
+input NeoWhereInputType {
+  id: ID
+}
+
+type PageNumberEntity {
+  """Is paging of current data results?"""
+  current: Boolean
+
+  """Page index number."""
+  index: Int
+
+  """Paging limit variable."""
+  limit: Int
+
+  """Is Addtional pagination node? Sush as `...` label."""
+  more: Boolean
+
+  """Paging offset variable."""
+  offset: Int
+}
+
+type PagingEntity {
+  """Total results match with `WhereInput` in arguments."""
+  count: Int
+
+  """Index `from` of results."""
+  from: Int
+
+  """Total results return."""
+  length: Int
+
+  """
+  Cursor-based pagination. The Graph API endpoint that will return the next page of data. If not included, this is the last page of data. Due to how pagination works with visibility and privacy, it is possible that a page may be empty but contain a next paging link. Stop paging when the next link no longer appears.
+  """
+  next: PagingNextEntity
+
+  """
+  Offset-based Pagination using with API have suffix `WithPage`. This is current items show in pagination component.
+  """
+  pages: [PageNumberEntity!]
+
+  """
+  Cursor-based pagination. The Graph API endpoint that will return the previous page of data. If not included, this is the first page of data.
+  """
+  previous: PagingPreviousEntity
+
+  """Index `to` of results."""
+  to: Int
+}
+
+input PagingInput {
+  cursors: CursorInput
+
+  """
+  This is the maximum number of objects that may be returned. A query may return fewer than the value of limit due to filtering. Do not depend on the number of results being fewer than the limit value to indicate that your query reached the end of the list of data, use the absence of next instead as described below. For example, if you set limit to 10 and 9 results are returned, there may be more data available, but one item was removed due to privacy filtering. Some edges may also have a maximum on the limit value for performance reasons. In all cases, the API returns the correct pagination links.
+  """
+  limit: Float
+
+  """This offsets the start of each page by the number specified."""
+  offset: Float
+
+  """
+  A Unix timestamp or strtotime data value that points to the start of the range of time-based data.
+  """
+  since: DateTime
+
+  """Using to build pagination map. This is total results return per page."""
+  size: Int = 10
+
+  """
+  A Unix timestamp or strtotime data value that points to the end of the range of time-based data.
+  """
+  until: DateTime
+}
+
+type PagingNextEntity {
+  after: String
+  count: Float
+}
+
+type PagingPreviousEntity {
+  before: String
+  count: Float
+}
+
+type Query {
+  """find many mongo"""
+  findManyMongo(paging: PagingInput, search: String, sortBy: String, where: MongoWhereInputType): ManyMongoEntity
+
+  """find many neo with cursor-based pagination."""
+  findManyNeo(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): ManyNeo
+
+  """find many app with offset-based pagination."""
+  findManyNeoWithPage(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): ManyNeo
+
+  """find one mongo"""
+  findOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
+
+  """find one neo"""
+  findOneNeo(index: NeoIndexInputType!, label: String): NeoEntity
+}
+
 scalar link__Import

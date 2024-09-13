@@ -16,10 +16,12 @@ export const typeDefs = gql`
     " neo identity "
     id: ID @id
     " created at "
-    createdAt: DateTime @unique
+    createdAt: DateTime
     " created by "
-    createdBy: String @unique
-    " number "
+    createdBy: String
+
+    string: String @unique
+    date: DateTime @unique
     number: Float @unique
   }
 `;
@@ -36,9 +38,13 @@ export class NeoNeo4j extends Neo4j {
       id
       createdBy
       createdAt
+
+      string
+      date
       number
     }
   `;
+
   toEntity(node: any) {
     return new NeoEntity(node);
   }

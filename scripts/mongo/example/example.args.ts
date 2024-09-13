@@ -10,8 +10,8 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { Types } from 'mongoose';
-import { isEmpty, pickBy } from 'lodash';
-import { PagingInput } from 'nest-mopa';
+import { isEmpty, merge, pickBy } from 'lodash';
+import { PagingInput } from 'nest-gfc';
 import { ExampleEntity } from './example.entity';
 
 @InputType({ description: 'Example Public InputType' })
@@ -21,10 +21,28 @@ export class ExampleInputType extends PartialType(
 ) {}
 
 @InputType({ description: 'Example create Public InputType.' })
-export class ExampleCreateInputType extends PartialType(
-  PickType(ExampleInputType, ['string', 'date', 'number'] as const),
+export class ExampleUpdateInputType extends PartialType(
+  PickType(ExampleInputType, ['id', 'string', 'date', 'number'] as const),
   InputType,
-) {}
+) {
+  static toUpdateInput(data: ExampleCreateInputType) {
+    const result = {};
+    delete data.id;
+    return merge(result, data);
+  }
+}
+
+@InputType({ description: 'Example create Public InputType.' })
+export class ExampleCreateInputType extends PartialType(
+  PickType(ExampleInputType, ['id', 'string', 'date', 'number'] as const),
+  InputType,
+) {
+  static toCreateInput(data: ExampleCreateInputType) {
+    const result = { _id: new Types.ObjectId(data.id) };
+    delete data.id;
+    return merge(result, data);
+  }
+}
 
 @InputType({ description: 'Example where Public InputType' })
 export class ExampleWhereInputType extends PartialType(
@@ -106,15 +124,43 @@ export class ExampleIndexInputType extends PartialType(
  */
 
 @ArgsType()
+export class UpdateOneExampleArgs {
+  @Field()
+  data: ExampleUpdateInputType;
+
+  @Field()
+  index: ExampleIndexInputType;
+
+  static convert(args: UpdateOneExampleArgs) {
+    const filter = ExampleIndexInputType.toFilter(args.index);
+    const input = ExampleUpdateInputType.toUpdateInput(args.data);
+    return { filter, input };
+  }
+}
+
+@ArgsType()
 export class CreateOneExampleArgs {
   @Field()
   data: ExampleCreateInputType;
+
+  static convert(args: CreateOneExampleArgs) {
+    const input = ExampleCreateInputType.toCreateInput(args.data);
+    return { input };
+  }
 }
 
 @ArgsType()
 export class FindOneExampleArgs {
   @Field()
   index: ExampleIndexInputType;
+
+  @Field({ nullable: true })
+  label?: string;
+
+  static convert(args: FindOneExampleArgs) {
+    const filter = ExampleIndexInputType.toFilter(args.index);
+    return { filter };
+  }
 }
 
 @ArgsType()
@@ -130,4 +176,10 @@ export class FindManyExampleArgs {
 
   @Field({ nullable: true })
   search?: string;
+
+  static convert(args: FindManyExampleArgs) {
+    const filter = ExampleWhereInputType.toFilter(args.where);
+    const sort = ExampleWhereInputType.toSort(args.sortBy);
+    return { ...args, filter, sort };
+  }
 }

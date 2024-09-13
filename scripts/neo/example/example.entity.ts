@@ -12,7 +12,7 @@ import {
 import { pickBy } from 'lodash';
 
 import { ExampleInterface } from './example.interface';
-import { PagingEntity } from 'nest-nepa';
+import { PagingEntity } from 'nest-gfc';
 
 @ObjectType({
   description: 'Type of example entity. Base on example interface.',
@@ -20,7 +20,7 @@ import { PagingEntity } from 'nest-nepa';
 @Directive(`@key(fields: "id")`)
 export class ExampleEntity implements ExampleInterface {
   static nodeName = 'Example';
-  @Field(() => ID, { nullable: false })
+  @Field(() => ID, { nullable: true })
   id?: string;
 
   @Field(() => String, { nullable: true })
@@ -31,10 +31,20 @@ export class ExampleEntity implements ExampleInterface {
   })
   createdAt?: Date;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  string?: string;
+
   @Field(() => Number, {
     nullable: true,
   })
   number?: number;
+
+  @Field(() => GraphQLISODateTime, {
+    nullable: true,
+  })
+  date?: Date;
 
   constructor(partial: any) {
     Object.assign(this, partial);
@@ -63,6 +73,11 @@ export class ExampleEntity implements ExampleInterface {
       createdBy: this.createdBy,
     };
   }
+
+  /*
+   * DPRECATED
+   * Use ExampleUpdateInputType.toUpdateInput instead
+   */
   toUpdateInput() {
     return {
       createdAt: this.createdAt.toISOString(),
@@ -70,6 +85,10 @@ export class ExampleEntity implements ExampleInterface {
     };
   }
 
+  /*
+   * DPRECATED
+   * Use ExampleCreateInputType.toCreateInput instead
+   */
   toCreateInput() {
     return pickBy({
       createdAt: this.createdAt.toISOString(),

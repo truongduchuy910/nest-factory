@@ -10,3 +10,6 @@
 [submodule "libs/nest-ogm"]
 	path = libs/nest-ogm
 	url = git@github.com:truongduchuy910/nest-ogm.git
+[submodule "libs/nest-gfc"]
+	path = libs/nest-gfc
+	url = git@github.com:truongduchuy910/nest-gfc.git

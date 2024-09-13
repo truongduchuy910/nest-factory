@@ -8,14 +8,12 @@ import { NeoEntity, ManyNeo } from './neo.entity';
 import {
   CreateOneNeoArgs,
   DeleteOneNeoArgs,
-  NeoWhereInput,
+  NeoWhereInputType,
   FindManyNeoArgs,
   FindOneNeoArgs,
   UpdateOneNeoArgs,
 } from './neo.args';
 import { NeoService } from './neo.service';
-import { isEmpty } from 'lodash';
-import { GraphQLError } from 'graphql';
 
 @Resolver(() => NeoEntity)
 export class NeoResolver {
@@ -30,8 +28,28 @@ export class NeoResolver {
     description: 'create one neo',
   })
   async createOneNeo(@Args() args: CreateOneNeoArgs) {
-    const created = await this.service.createOne(args.data);
+    const { input } = CreateOneNeoArgs.convert(args);
+    const many = await this.node.create({ input });
+    const [created] = many?.neos;
     return created;
+  }
+
+  @Mutation(() => NeoEntity, { nullable: true })
+  async updateOneNeo(@Args() args: UpdateOneNeoArgs) {
+    const { filter, input } = UpdateOneNeoArgs.convert(args);
+    const updated = await this.node.update({
+      where: filter,
+      update: input,
+    });
+
+    return updated;
+  }
+
+  @Mutation(() => NeoEntity, { nullable: true })
+  async deleteOneNeo(@Args() args: DeleteOneNeoArgs) {
+    const { index } = args;
+    const deleted = await this.service.deleteOneById(index.id);
+    return deleted;
   }
 
   @Query(() => NeoEntity, {
@@ -39,10 +57,9 @@ export class NeoResolver {
     description: 'find one neo',
   })
   async findOneNeo(@Args() args: FindOneNeoArgs) {
-    const { index } = args;
-    if (isEmpty(index.id)) return new GraphQLError(`Missing id`);
-
-    const neo = await this.service.findOneById(index.id);
+    const { filter } = FindOneNeoArgs.convert(args);
+    const many = await this.node.find({ where: filter });
+    const [neo] = many;
     return neo;
   }
 
@@ -51,13 +68,13 @@ export class NeoResolver {
     description: 'find many neo with cursor-based pagination.',
   })
   async findManyNeo(@Args() args: FindManyNeoArgs) {
-    const filter = NeoWhereInput.toFilter(args.where);
-    const sort = NeoWhereInput.toSort(args.sortBy);
+    const { filter, paging, sort, search } = FindManyNeoArgs.convert(args);
+
     const many = await this.service.findMany({
       filter,
-      paging: args.paging,
+      paging,
       sort,
-      search: args.search,
+      search,
     });
     return many;
   }
@@ -67,27 +84,11 @@ export class NeoResolver {
     description: 'find many app with offset-based pagination.',
   })
   async findManyNeoWithPage(@Args() args: FindManyNeoArgs) {
-    const filter = NeoWhereInput.toFilter(args.where);
+    const filter = NeoWhereInputType.toFilter(args.where);
     const many = await this.service.findMany({
       filter,
       paging: args.paging,
     });
     return many;
-  }
-
-  @Mutation(() => NeoEntity, { nullable: true })
-  async updateOneNeo(@Args() args: UpdateOneNeoArgs) {
-    const { index, data } = args;
-    if (isEmpty(index.id)) return new GraphQLError(`Missing id`);
-
-    const updated = await this.service.updateOneById(index.id, data);
-    return updated;
-  }
-
-  @Mutation(() => NeoEntity, { nullable: true })
-  async deleteOneNeo(@Args() args: DeleteOneNeoArgs) {
-    const { index } = args;
-    const deleted = await this.service.deleteOneById(index.id);
-    return deleted;
   }
 }

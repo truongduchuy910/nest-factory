@@ -10,8 +10,8 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { Types } from 'mongoose';
-import { isEmpty, pickBy } from 'lodash';
-import { PagingInput } from 'nest-mopa';
+import { isEmpty, merge, pickBy } from 'lodash';
+import { PagingInput } from 'nest-gfc';
 import { MongoEntity } from './mongo.entity';
 
 @InputType({ description: 'Mongo Public InputType' })
@@ -21,10 +21,28 @@ export class MongoInputType extends PartialType(
 ) {}
 
 @InputType({ description: 'Mongo create Public InputType.' })
-export class MongoCreateInputType extends PartialType(
-  PickType(MongoInputType, ['string', 'date', 'number'] as const),
+export class MongoUpdateInputType extends PartialType(
+  PickType(MongoInputType, ['id', 'string', 'date', 'number'] as const),
   InputType,
-) {}
+) {
+  static toUpdateInput(data: MongoCreateInputType) {
+    const result = {};
+    delete data.id;
+    return merge(result, data);
+  }
+}
+
+@InputType({ description: 'Mongo create Public InputType.' })
+export class MongoCreateInputType extends PartialType(
+  PickType(MongoInputType, ['id', 'string', 'date', 'number'] as const),
+  InputType,
+) {
+  static toCreateInput(data: MongoCreateInputType) {
+    const result = { _id: new Types.ObjectId(data.id) };
+    delete data.id;
+    return merge(result, data);
+  }
+}
 
 @InputType({ description: 'Mongo where Public InputType' })
 export class MongoWhereInputType extends PartialType(
@@ -106,15 +124,43 @@ export class MongoIndexInputType extends PartialType(
  */
 
 @ArgsType()
+export class UpdateOneMongoArgs {
+  @Field()
+  data: MongoUpdateInputType;
+
+  @Field()
+  index: MongoIndexInputType;
+
+  static convert(args: UpdateOneMongoArgs) {
+    const filter = MongoIndexInputType.toFilter(args.index);
+    const input = MongoUpdateInputType.toUpdateInput(args.data);
+    return { filter, input };
+  }
+}
+
+@ArgsType()
 export class CreateOneMongoArgs {
   @Field()
   data: MongoCreateInputType;
+
+  static convert(args: CreateOneMongoArgs) {
+    const input = MongoCreateInputType.toCreateInput(args.data);
+    return { input };
+  }
 }
 
 @ArgsType()
 export class FindOneMongoArgs {
   @Field()
   index: MongoIndexInputType;
+
+  @Field({ nullable: true })
+  label?: string;
+
+  static convert(args: FindOneMongoArgs) {
+    const filter = MongoIndexInputType.toFilter(args.index);
+    return { filter };
+  }
 }
 
 @ArgsType()
@@ -130,4 +176,10 @@ export class FindManyMongoArgs {
 
   @Field({ nullable: true })
   search?: string;
+
+  static convert(args: FindManyMongoArgs) {
+    const filter = MongoWhereInputType.toFilter(args.where);
+    const sort = MongoWhereInputType.toSort(args.sortBy);
+    return { ...args, filter, sort };
+  }
 }

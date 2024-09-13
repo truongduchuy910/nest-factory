@@ -2,7 +2,7 @@ name: factory
 
 services:
   postgres:
-    image: postgres
+    image: postgres:14
     container_name: postgres
     volumes:
       - type: bind
@@ -17,8 +17,8 @@ services:
           create_host_path: true
     environment:
       POSTGRES_DB: factory
-      POSTGRES_USER: factory
-      POSTGRES_PASSWORD: this.is.password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sLOMATIpHEAs
       POSTGRES_HOST_AUTH_METHOD: trust
     networks:
       - backend
@@ -30,7 +30,7 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U factory']
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 3
@@ -43,7 +43,7 @@ services:
       - ./volumes/neo4j/data:/data
       - ./volumes/neo4j/plugins:/plugins
     environment:
-      - NEO4J_AUTH=neo4j/this.is.password
+      - NEO4J_AUTH=neo4j/sLOMATIpHEAs
       - NEO4J_PLUGINS=["apoc"]
     networks:
       - backend
@@ -78,22 +78,22 @@ services:
       retries: 5
     restart: always
 
-  # migration:
-  #   image: localhost:32000/truongduchuy910/factory:local-migr
-  #   container_name: migration
-  #   networks:
-  #     - backend
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   build:
-  #     context: .
-  #     target: migr
-  #   volumes:
-  #     - type: bind
-  #       source: prisma
-  #       target: /app/prisma
-  #   env_file: './.env'
+  migration:
+    image: localhost:32000/truongduchuy910/factory:local-migr
+    container_name: migration
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: .
+      target: migr
+    volumes:
+      - type: bind
+        source: prisma
+        target: /app/prisma
+    env_file: './.env'
 
   # factory:
   #   image: localhost:32000/truongduchuy910/factory:local

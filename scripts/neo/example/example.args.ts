@@ -9,38 +9,71 @@ import {
   PartialType,
   PickType,
 } from '@nestjs/graphql';
-import { PagingInput } from 'nest-nepa';
+import { PagingInput } from 'nest-gfc';
 import { isEmpty, pickBy } from 'lodash';
 
 import { ExampleEntity } from './example.entity';
 
 @InputType({ description: 'example entity general input' })
 export class ExampleInputType extends PartialType(
-  PickType(ExampleEntity, ['id', 'createdBy', 'createdAt', 'number'] as const),
+  PickType(ExampleEntity, [
+    'id',
+    'createdBy',
+    'createdAt',
+    'number',
+    'string',
+    'date',
+  ] as const),
   InputType,
 ) {}
 
 @InputType({ description: 'example entity create input' })
 export class ExampleCreateInputType extends PartialType(
-  PickType(ExampleInputType, ['createdBy', 'createdAt', 'number'] as const),
+  PickType(ExampleInputType, [
+    'createdBy',
+    'createdAt',
+    'number',
+    'string',
+    'date',
+  ] as const),
   InputType,
-) {}
+) {
+  static toCreateInput(data: ExampleCreateInputType) {
+    return pickBy({
+      createdAt: data.createdAt,
+      createdBy: data.createdBy,
+      number: data.number,
+      string: data.string,
+      date: data.date.toISOString(),
+    });
+  }
+}
 
 @InputType({ description: 'example entity update input' })
-export class ExampleUpdateInput extends PartialType(
-  PickType(ExampleInputType, ['number'] as const),
+export class ExampleUpdateInputType extends PartialType(
+  PickType(ExampleInputType, ['number', 'string', 'date'] as const),
   InputType,
-) {}
+) {
+  static toUpdateInput(data: ExampleCreateInputType) {
+    return {
+      createdAt: data.createdAt && data.createdAt.toISOString(),
+      createdBy: data.createdBy,
+      number: data.number,
+      string: data.string,
+      date: data.date && data.date.toISOString(),
+    };
+  }
+}
 
 @InputType({ description: 'example entity where input' })
-export class ExampleWhereInput extends PartialType(
+export class ExampleWhereInputType extends PartialType(
   PickType(ExampleInputType, ['id'] as const),
   InputType,
 ) {
   /**
    * convert to neo4j filter
    */
-  static toFilter(where: ExampleWhereInput | undefined) {
+  static toFilter(where: ExampleWhereInputType | undefined) {
     const filter = {} as any;
     if (where?.id) {
       filter.id = where.id;
@@ -86,11 +119,11 @@ export class ExampleWhereInput extends PartialType(
 }
 
 @InputType({ description: 'example entity index input' })
-export class ExampleIndexInput extends PartialType(
+export class ExampleIndexInputType extends PartialType(
   PickType(ExampleInputType, ['id'] as const),
   InputType,
 ) {
-  static toFilter(index: ExampleIndexInput | undefined) {
+  static toFilter(index: ExampleIndexInputType | undefined) {
     let filter: any = {};
     if (index?.id) {
       filter.id = index.id;
@@ -107,17 +140,24 @@ export class ExampleIndexInput extends PartialType(
 /**
  * ARGUMENTS
  */
-
 @ArgsType()
 export class FindOneExampleArgs {
   @Field()
-  index: ExampleIndexInput;
+  index: ExampleIndexInputType;
+
+  @Field({ nullable: true })
+  label?: string;
+
+  static convert(args: FindOneExampleArgs) {
+    const filter = ExampleIndexInputType.toFilter(args.index);
+    return { filter };
+  }
 }
 
 @ArgsType()
 export class FindManyExampleArgs {
   @Field({ nullable: true })
-  where: ExampleWhereInput;
+  where: ExampleWhereInputType;
 
   @Field({ nullable: true })
   paging: PagingInput;
@@ -127,25 +167,42 @@ export class FindManyExampleArgs {
 
   @Field({ nullable: true })
   search?: string;
+
+  static convert(args: FindManyExampleArgs) {
+    const filter = ExampleWhereInputType.toFilter(args.where);
+    const sort = ExampleWhereInputType.toSort(args.sortBy);
+    return { ...args, filter, sort };
+  }
 }
 
 @ArgsType()
 export class CreateOneExampleArgs {
   @Field()
   data: ExampleCreateInputType;
+
+  static convert(args: CreateOneExampleArgs) {
+    const input = ExampleCreateInputType.toCreateInput(args.data);
+    return { input };
+  }
 }
 
 @ArgsType()
 export class UpdateOneExampleArgs {
   @Field()
-  index: ExampleIndexInput;
+  index: ExampleIndexInputType;
 
   @Field()
-  data: ExampleUpdateInput;
+  data: ExampleUpdateInputType;
+
+  static convert(args: UpdateOneExampleArgs) {
+    const filter = ExampleIndexInputType.toFilter(args.index);
+    const input = ExampleUpdateInputType.toUpdateInput(args.data);
+    return { filter, input };
+  }
 }
 
 @ArgsType()
 export class DeleteOneExampleArgs {
   @Field()
-  index: ExampleIndexInput;
+  index: ExampleIndexInputType;
 }

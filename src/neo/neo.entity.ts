@@ -12,7 +12,7 @@ import {
 import { pickBy } from 'lodash';
 
 import { NeoInterface } from './neo.interface';
-import { PagingEntity } from 'nest-nepa';
+import { PagingEntity } from 'nest-gfc';
 
 @ObjectType({
   description: 'Type of neo entity. Base on neo interface.',
@@ -20,7 +20,7 @@ import { PagingEntity } from 'nest-nepa';
 @Directive(`@key(fields: "id")`)
 export class NeoEntity implements NeoInterface {
   static nodeName = 'Neo';
-  @Field(() => ID, { nullable: false })
+  @Field(() => ID, { nullable: true })
   id?: string;
 
   @Field(() => String, { nullable: true })
@@ -31,10 +31,20 @@ export class NeoEntity implements NeoInterface {
   })
   createdAt?: Date;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  string?: string;
+
   @Field(() => Number, {
     nullable: true,
   })
   number?: number;
+
+  @Field(() => GraphQLISODateTime, {
+    nullable: true,
+  })
+  date?: Date;
 
   constructor(partial: any) {
     Object.assign(this, partial);
@@ -63,6 +73,11 @@ export class NeoEntity implements NeoInterface {
       createdBy: this.createdBy,
     };
   }
+
+  /*
+   * DPRECATED
+   * Use NeoUpdateInputType.toUpdateInput instead
+   */
   toUpdateInput() {
     return {
       createdAt: this.createdAt.toISOString(),
@@ -70,6 +85,10 @@ export class NeoEntity implements NeoInterface {
     };
   }
 
+  /*
+   * DPRECATED
+   * Use NeoCreateInputType.toCreateInput instead
+   */
   toCreateInput() {
     return pickBy({
       createdAt: this.createdAt.toISOString(),

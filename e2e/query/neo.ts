@@ -1,17 +1,17 @@
 import { uri } from '@e2e/common/config';
 import { gql, request } from 'graphql-request';
 
-export async function findManyMongo(props?: any) {
+export async function findManyNeo(props?: any) {
   const { where, paging, search, sortBy } = props || {};
   delete paging?.count;
   const query = gql`
     query (
-      $where: MongoWhereInputType
+      $where: NeoWhereInputType
       $paging: PagingInput
       $search: String
       $sortBy: String
     ) {
-      findManyMongo(
+      findManyNeo(
         where: $where
         paging: $paging
         search: $search
@@ -38,7 +38,7 @@ export async function findManyMongo(props?: any) {
     }
   `;
 
-  const { findManyMongo: data } = await request<any>(uri, query, {
+  const { findManyNeo: data } = await request<any>(uri, query, {
     where,
     paging,
     search,
@@ -47,15 +47,15 @@ export async function findManyMongo(props?: any) {
   return data;
 }
 
-export async function findOneMongo(
+export async function findOneNeo(
   { index, label }: { index: any; label?: string },
   token?: string,
 ) {
-  const { findOneMongo } = await request<any>(
+  const { findOneNeo } = await request<any>(
     uri,
     gql`
-      query ($index: MongoIndexInputType!, $label: String) {
-        findOneMongo(index: $index, label: $label) {
+      query ($index: NeoIndexInputType!, $label: String) {
+        findOneNeo(index: $index, label: $label) {
           id
           string
           date
@@ -66,5 +66,5 @@ export async function findOneMongo(
     { index, label },
     { authorization: `Bearer ${token}` },
   );
-  return findOneMongo;
+  return findOneNeo;
 }

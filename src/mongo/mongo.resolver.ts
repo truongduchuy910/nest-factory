@@ -5,14 +5,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
-
 import { MongoEntity, ManyMongoEntity } from './mongo.entity';
 import {
   CreateOneMongoArgs,
-  MongoIndexInputType,
-  MongoWhereInputType,
   FindManyMongoArgs,
   FindOneMongoArgs,
+  UpdateOneMongoArgs,
 } from './mongo.args';
 import { MongoService } from './mongo.service';
 import { MongoDocument } from './mongo.schema';
@@ -28,9 +26,26 @@ export class MongoResolver {
   }
 
   @Mutation(() => MongoEntity, { nullable: true })
+  async updateOneMongo(@Args() args: UpdateOneMongoArgs) {
+    const { filter, input } = UpdateOneMongoArgs.convert(args);
+    const updated = await this.model.findOneAndUpdate(filter, input, {
+      new: true,
+    });
+    return updated.toEntity();
+  }
+
+  @Mutation(() => MongoEntity, { nullable: true })
   async createOneMongo(@Args() args: CreateOneMongoArgs) {
-    const created = await this.model.create(args.data);
-    return created;
+    const { input } = CreateOneMongoArgs.convert(args);
+    const created = await this.model.create(input);
+    return created.toEntity();
+  }
+
+  @Mutation(() => MongoEntity, { nullable: true })
+  async deleteOneMongo(@Args() args: FindOneMongoArgs) {
+    const { filter } = FindOneMongoArgs.convert(args);
+    const deleted = await this.model.findOneAndDelete(filter, { new: true });
+    return deleted.toEntity();
   }
 
   @Query(() => MongoEntity, {
@@ -38,8 +53,7 @@ export class MongoResolver {
     description: 'find one mongo',
   })
   async findOneMongo(@Args() args: FindOneMongoArgs) {
-    const { index } = args;
-    const filter = MongoIndexInputType.toFilter(index);
+    const { filter } = FindOneMongoArgs.convert(args);
     const one = await this.service.findOne({ filter });
     return one;
   }
@@ -49,10 +63,7 @@ export class MongoResolver {
     description: 'find many mongo',
   })
   async findManyMongo(@Args() args: FindManyMongoArgs) {
-    const { where, paging, sortBy, search } = args;
-    const filter = MongoWhereInputType.toFilter(where);
-    const sort = MongoWhereInputType.toSort(sortBy);
-
+    const { filter, paging, sort, search } = FindManyMongoArgs.convert(args);
     const many = await this.service.findMany({
       filter,
       paging,

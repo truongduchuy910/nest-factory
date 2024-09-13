@@ -11,4 +11,8 @@ export interface NeoInterface {
   createdAt?: Date;
   /* created by */
   createdBy?: string;
+
+  string?: string;
+  number?: number;
+  date?: Date;
 }

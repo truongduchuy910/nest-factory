@@ -11,4 +11,8 @@ export interface ExampleInterface {
   createdAt?: Date;
   /* created by */
   createdBy?: string;
+
+  string?: string;
+  number?: number;
+  date?: Date;
 }

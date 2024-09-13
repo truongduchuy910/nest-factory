@@ -10,6 +10,8 @@ import { Neo4jModule } from 'nest-ogm';
 import { neo4jConfig } from './config/neo4j';
 import { NeoModule } from './neo/neo.module';
 import { MongoModule } from './mongo/mongo.module';
+import { PrismaService } from './prisma.service';
+import { PrisModule } from './pris/pris.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { MongoModule } from './mongo/mongo.module';
     Neo4jModule.forRootAsync(neo4jConfig),
     MongoModule,
     NeoModule,
+    PrisModule,
   ],
+  providers: [PrismaService],
 })
 export class AppModule {}

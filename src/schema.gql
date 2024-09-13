@@ -53,6 +53,14 @@ type ManyNeo {
   paging: PagingEntity
 }
 
+type ManyPrisEntity {
+  """data return as array"""
+  data: [PrisEntity!]!
+
+  """pagination"""
+  paging: PagingEntity
+}
+
 """Mongo create Public InputType."""
 input MongoCreateInputType {
   date: DateTime
@@ -94,15 +102,18 @@ type Mutation {
 
   """create one neo"""
   createOneNeo(data: NeoCreateInputType!): NeoEntity
+  createOnePris(data: PrisCreateInputType!): PrisEntity
   deleteOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
   deleteOneNeo(index: NeoIndexInputType!): NeoEntity
+  deleteOnePris(index: PrisIndexInputType!, label: String): PrisEntity
   updateOneMongo(data: MongoUpdateInputType!, index: MongoIndexInputType!): MongoEntity
   updateOneNeo(data: NeoUpdateInputType!, index: NeoIndexInputType!): NeoEntity
+  updateOnePris(data: PrisUpdateInputType!, index: PrisIndexInputType!): PrisEntity
 }
 
 """neo entity create input"""
 input NeoCreateInputType {
-  createdAt: DateTime = "2024-09-13T08:26:29.202Z"
+  createdAt: DateTime = "2024-09-13T08:54:29.403Z"
   createdBy: String
   date: DateTime
   number: Float
@@ -217,6 +228,42 @@ type PagingPreviousEntity {
   count: Float
 }
 
+"""Pris create Public InputType."""
+input PrisCreateInputType {
+  date: DateTime
+  id: ID
+  number: Float
+  string: String
+}
+
+type PrisEntity {
+  date: DateTime
+  id: ID!
+  number: Float
+  string: String
+}
+
+"""Pris index Public InputType"""
+input PrisIndexInputType {
+  id: ID
+}
+
+"""Pris create Public InputType."""
+input PrisUpdateInputType {
+  date: DateTime
+  id: ID
+  number: Float
+  string: String
+}
+
+"""Pris where Public InputType"""
+input PrisWhereInputType {
+  date: DateTime
+  id: ID
+  number: Float
+  string: String
+}
+
 type Query {
   """find many mongo"""
   findManyMongo(paging: PagingInput, search: String, sortBy: String, where: MongoWhereInputType): ManyMongoEntity
@@ -227,11 +274,17 @@ type Query {
   """find many app with offset-based pagination."""
   findManyNeoWithPage(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): ManyNeo
 
+  """find many pris"""
+  findManyPris(paging: PagingInput, search: String, sortBy: String, where: PrisWhereInputType): ManyPrisEntity
+
   """find one mongo"""
   findOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
 
   """find one neo"""
   findOneNeo(index: NeoIndexInputType!, label: String): NeoEntity
+
+  """find one pris"""
+  findOnePris(index: PrisIndexInputType!, label: String): PrisEntity
 }
 
 scalar link__Import

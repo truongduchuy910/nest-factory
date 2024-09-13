@@ -78,22 +78,22 @@ services:
       retries: 5
     restart: always
 
-  migration:
-    image: localhost:32000/truongduchuy910/factory:local-migr
-    container_name: migration
-    networks:
-      - backend
-    depends_on:
-      postgres:
-        condition: service_healthy
-    build:
-      context: .
-      target: migr
-    volumes:
-      - type: bind
-        source: prisma
-        target: /app/prisma
-    env_file: './.env'
+  # migration:
+  #   image: localhost:32000/truongduchuy910/factory:local-migr
+  #   container_name: migration
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   build:
+  #     context: .
+  #     target: migr
+  #   volumes:
+  #     - type: bind
+  #       source: prisma
+  #       target: /app/prisma
+  #   env_file: './.env'
 
   # factory:
   #   image: localhost:32000/truongduchuy910/factory:local

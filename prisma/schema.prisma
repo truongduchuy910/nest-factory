@@ -16,4 +16,7 @@ datasource db {
 model Pisma {
   id    Int     @default(autoincrement()) @id
   createdAt DateTime @unique @default(now())
+  string String @unique
+  number Int @unique
+  date DateTime @unique
 }

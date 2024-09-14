@@ -1,6 +1,26 @@
 import { uri } from '@e2e/common/config';
 import { gql, request } from 'graphql-request';
 
+export async function findManyMongoCursor({ tid, sortBy }) {
+  const limit = 3;
+  let props = {
+      where: { label: tid },
+      paging: { limit, cursors: null },
+      sortBy,
+    },
+    many: any,
+    hasNext = true,
+    mongos = [];
+  while ((many = hasNext && (await findManyMongo(props)))) {
+    const next = many?.paging?.next || {};
+    mongos.push(...many.data);
+    hasNext = next.count > 0;
+    delete next.count;
+    props.paging.cursors = next;
+  }
+  return mongos;
+}
+
 export async function findManyMongo(props?: any) {
   const { where, paging, search, sortBy } = props || {};
   delete paging?.count;

@@ -6,7 +6,11 @@ import {
   updateOneMongo,
 } from './mutation/mongo';
 import { customAlphabet } from 'nanoid';
-import { findManyMongo, findOneMongo } from './query/mongo';
+import {
+  findManyMongo,
+  findManyMongoCursor,
+  findOneMongo,
+} from './query/mongo';
 import { Types } from 'mongoose';
 
 describe('create one', () => {
@@ -75,7 +79,7 @@ describe('create many', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
   const tid = nanoid();
   const date = new Date();
-  let data = Array.from({ length: 11 }, (_, i) => {
+  let data = Array.from({ length: 62 }, (_, i) => {
     const uniq = date.setSeconds(i);
     return {
       id: new Types.ObjectId(),
@@ -126,49 +130,50 @@ describe('create many', () => {
   });
 
   test('string_ASC cursor-based pagination', async () => {
-    const limit = 3;
-    let props = {
-        where: { label: tid },
-        paging: { limit, cursors: null },
-        sortBy: 'string_ASC',
-      },
-      many: any,
-      hasNext = true,
-      mongos = [];
-    while ((many = hasNext && (await findManyMongo(props)))) {
-      const next = many?.paging?.next || {};
-      mongos.push(...many.data);
-      hasNext = next.count > 0;
-      delete next.count;
-      props.paging.cursors = next;
-    }
-
+    const mongos = await findManyMongoCursor({ tid, sortBy: 'string_ASC' });
     const sorted = data.map((i) => i.string).sort((a, b) => (a > b ? 1 : -1));
     expect(sorted).toStrictEqual(mongos.map((i) => i.string));
   });
 
   test('string_DESC cursor-based pagination', async () => {
-    const limit = 3;
-    let props = {
-        where: { label: tid },
-        paging: { limit, cursors: null },
-        sortBy: 'string_DESC',
-      },
-      many: any,
-      hasNext = true,
-      mongos = [];
-    while ((many = hasNext && (await findManyMongo(props)))) {
-      const next = many?.paging?.next || {};
-      mongos.push(...many.data);
-      hasNext = next.count > 0;
-      delete next.count;
-      props.paging.cursors = next;
-    }
+    const mongos = await findManyMongoCursor({ tid, sortBy: 'string_DESC' });
     const sorted = data
       .map((i) => i.string)
       .sort((a, b) => (a > b ? 1 : -1))
       .reverse();
     expect(sorted).toStrictEqual(mongos.map((i) => i.string));
+  });
+
+  test('number_ASC cursor-based pagination', async () => {
+    const mongos = await findManyMongoCursor({ tid, sortBy: 'number_ASC' });
+    const sorted = data.map((i) => i.number).sort((a, b) => (a > b ? 1 : -1));
+    expect(sorted).toStrictEqual(mongos.map((i) => i.number));
+  });
+
+  test('number_DESC cursor-based pagination', async () => {
+    const mongos = await findManyMongoCursor({ tid, sortBy: 'number_DESC' });
+    const sorted = data
+      .map((i) => i.number)
+      .sort((a, b) => (a > b ? 1 : -1))
+      .reverse();
+    expect(sorted).toStrictEqual(mongos.map((i) => i.number));
+  });
+
+  test('date_ASC cursor-based pagination', async () => {
+    const mongos = await findManyMongoCursor({ tid, sortBy: 'date_ASC' });
+    const sorted = data
+      .map((i) => i.date.toISOString())
+      .sort((a, b) => (a > b ? 1 : -1));
+    expect(sorted).toStrictEqual(mongos.map((i) => i.date));
+  });
+
+  test('date_DESC cursor-based pagination', async () => {
+    const mongos = await findManyMongoCursor({ tid, sortBy: 'date_DESC' });
+    const sorted = data
+      .map((i) => i.date.toISOString())
+      .sort((a, b) => (a > b ? 1 : -1))
+      .reverse();
+    expect(sorted).toStrictEqual(mongos.map((i) => i.date));
   });
 
   describe(`delete many`, () => {

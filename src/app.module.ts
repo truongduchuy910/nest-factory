@@ -12,6 +12,7 @@ import { NeoModule } from './neo/neo.module';
 import { MongoModule } from './mongo/mongo.module';
 import { PrismaService } from './prisma.service';
 import { PrisModule } from './pris/pris.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { PrisModule } from './pris/pris.module';
     MongoModule,
     NeoModule,
     PrisModule,
+    PrismaModule,
   ],
-  providers: [PrismaService],
 })
 export class AppModule {}

@@ -13,10 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Pisma {
+model Pris {
   id    Int     @default(autoincrement()) @id
   createdAt DateTime @unique @default(now())
   string String @unique
-  number Int @unique
+  number BigInt @unique
   date DateTime @unique
 }

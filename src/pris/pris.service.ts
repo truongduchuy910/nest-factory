@@ -3,16 +3,15 @@
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { Model } from 'mongoose';
 
-import { PrisCRUD, PrisDocument, PrisSchema } from './pris.schema';
-import { InjectModel } from '@nestjs/mongoose';
+import { PrisCRUD } from './pris.schema';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class PrisService extends PrisCRUD {
   readonly logger = new Logger(PrisService.name);
 
-  constructor(@InjectModel(PrisSchema.name) model: Model<PrisDocument>) {
-    super(model);
+  constructor(prisma: PrismaService) {
+    super(prisma);
   }
 }

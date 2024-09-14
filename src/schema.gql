@@ -102,18 +102,21 @@ type Mutation {
 
   """create one neo"""
   createOneNeo(data: NeoCreateInputType!): NeoEntity
+
+  """create one pris"""
   createOnePris(data: PrisCreateInputType!): PrisEntity
   deleteOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
   deleteOneNeo(index: NeoIndexInputType!): NeoEntity
+
+  """delete one pris"""
   deleteOnePris(index: PrisIndexInputType!, label: String): PrisEntity
   updateOneMongo(data: MongoUpdateInputType!, index: MongoIndexInputType!): MongoEntity
   updateOneNeo(data: NeoUpdateInputType!, index: NeoIndexInputType!): NeoEntity
-  updateOnePris(data: PrisUpdateInputType!, index: PrisIndexInputType!): PrisEntity
 }
 
 """neo entity create input"""
 input NeoCreateInputType {
-  createdAt: DateTime = "2024-09-13T08:54:29.403Z"
+  createdAt: DateTime = "2024-09-14T07:54:18.562Z"
   createdBy: String
   date: DateTime
   number: Float
@@ -246,14 +249,6 @@ type PrisEntity {
 """Pris index Public InputType"""
 input PrisIndexInputType {
   id: ID
-}
-
-"""Pris create Public InputType."""
-input PrisUpdateInputType {
-  date: DateTime
-  id: ID
-  number: Float
-  string: String
 }
 
 """Pris where Public InputType"""

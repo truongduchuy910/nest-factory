@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PrisSchema, PrisSchemaFactory } from './pris.schema';
 import { PrisService } from './pris.service';
 import { PrisResolver } from './pris.resolver';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PrisResolver } from './pris.resolver';
         schema: PrisSchemaFactory,
       },
     ]),
+    PrismaModule,
   ],
   providers: [PrisService, PrisResolver],
   exports: [PrisService],

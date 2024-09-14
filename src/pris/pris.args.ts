@@ -13,6 +13,8 @@ import { Types } from 'mongoose';
 import { isEmpty, merge, pickBy } from 'lodash';
 import { PagingInput } from 'nest-gfc';
 import { PrisEntity } from './pris.entity';
+import { Prisma } from '@prisma/client';
+import { number } from 'joi';
 
 @InputType({ description: 'Pris Public InputType' })
 export class PrisInputType extends PartialType(
@@ -37,10 +39,13 @@ export class PrisCreateInputType extends PartialType(
   PickType(PrisInputType, ['id', 'string', 'date', 'number'] as const),
   InputType,
 ) {
-  static toCreateInput(data: PrisCreateInputType) {
-    const result = { _id: new Types.ObjectId(data.id) };
-    delete data.id;
-    return merge(result, data);
+  static toCreateInput(data: PrisCreateInputType): Prisma.PrisCreateInput {
+    return {
+      createdAt: new Date(),
+      number: data.number,
+      string: data.string,
+      date: data.date,
+    };
   }
 }
 
@@ -53,11 +58,12 @@ export class PrisWhereInputType extends PartialType(
    * convert to mongo filter
    */
   static toFilter(where: PrisWhereInputType | undefined) {
-    const filter = {} as any;
-    if (where?.id) {
-      filter._id = new Types.ObjectId(where.id);
-    }
-    return pickBy(filter);
+    return pickBy({
+      id: Number(where.id),
+      number: where.number,
+      string: where.string,
+      date: where.date,
+    });
   }
 
   static toSort(key: string) {
@@ -105,17 +111,10 @@ export class PrisIndexInputType extends PartialType(
   /**
    * convert to mongo filter
    */
-  static toFilter(index: PrisIndexInputType | undefined) {
-    const filter = {} as any;
-    if (index?.id) {
-      filter._id = new Types.ObjectId(index.id);
-    }
-
-    const resolvedData = pickBy(filter);
-    if (isEmpty(resolvedData)) {
-      throw new Error('PrisIndexInputType cannot empty');
-    }
-    return resolvedData;
+  static toFilter(
+    index: PrisIndexInputType | undefined,
+  ): Prisma.PrisWhereUniqueInput {
+    return { id: Number(index.id) };
   }
 }
 

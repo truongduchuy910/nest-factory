@@ -49,6 +49,13 @@ export class MongoResolver {
     return created && created.toEntity();
   }
 
+  @Mutation(() => Number, { nullable: true })
+  async deleteManyMongo(@Args() args: FindManyMongoArgs) {
+    const { filter } = FindManyMongoArgs.convert(args);
+    const deleted = await this.model.deleteMany(filter);
+    return deleted?.deletedCount;
+  }
+
   @Mutation(() => MongoEntity, { nullable: true })
   async deleteOneMongo(@Args() args: FindOneMongoArgs) {
     const { filter } = FindOneMongoArgs.convert(args);

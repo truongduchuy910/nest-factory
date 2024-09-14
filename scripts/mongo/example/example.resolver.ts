@@ -49,6 +49,13 @@ export class ExampleResolver {
     return created && created.toEntity();
   }
 
+  @Mutation(() => Number, { nullable: true })
+  async deleteManyExample(@Args() args: FindManyExampleArgs) {
+    const { filter } = FindManyExampleArgs.convert(args);
+    const deleted = await this.model.deleteMany(filter);
+    return deleted?.deletedCount;
+  }
+
   @Mutation(() => ExampleEntity, { nullable: true })
   async deleteOneExample(@Args() args: FindOneExampleArgs) {
     const { filter } = FindOneExampleArgs.convert(args);

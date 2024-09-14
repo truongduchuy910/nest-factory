@@ -78,3 +78,17 @@ export async function deleteOneMongo({ index }, token?: string) {
   );
   return deleteOneMongo;
 }
+
+export async function deleteManyMongo({ where }, token?: string) {
+  const { deleteManyMongo } = await request<any>(
+    uri,
+    gql`
+      mutation ($where: MongoWhereInputType) {
+        deleteManyMongo(where: $where)
+      }
+    `,
+    { where },
+    { authorization: `Bearer ${token}` },
+  );
+  return deleteManyMongo;
+}

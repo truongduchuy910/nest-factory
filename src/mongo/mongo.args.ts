@@ -13,10 +13,18 @@ import { Types } from 'mongoose';
 import { isEmpty, merge, pickBy } from 'lodash';
 import { PagingInput } from 'nest-gfc';
 import { MongoEntity } from './mongo.entity';
+import { Paging } from 'nest-mopa';
 
 @InputType({ description: 'Mongo Public InputType' })
 export class MongoInputType extends PartialType(
-  PickType(MongoEntity, ['id', 'label', 'string', 'date', 'number'] as const),
+  PickType(MongoEntity, [
+    'id',
+    'label',
+    'string',
+    'date',
+    'number',
+    'duplicate',
+  ] as const),
   InputType,
 ) {}
 
@@ -28,6 +36,7 @@ export class MongoUpdateInputType extends PartialType(
     'string',
     'date',
     'number',
+    'duplicate',
   ] as const),
   InputType,
 ) {
@@ -46,6 +55,7 @@ export class MongoCreateInputType extends PartialType(
     'string',
     'date',
     'number',
+    'duplicate',
   ] as const),
   InputType,
 ) {
@@ -64,6 +74,7 @@ export class MongoWhereInputType extends PartialType(
     'string',
     'date',
     'number',
+    'duplicate',
   ] as const),
   InputType,
 ) {
@@ -82,33 +93,33 @@ export class MongoWhereInputType extends PartialType(
     const map = {
       string_ASC: {
         key: 'string',
-        keyBuilder: (value: any) => `${value}`,
-        keyOrder: 1,
+        keyBuilder: (value: any) => String(value),
+        keyOrder: Paging.ASC,
       },
       string_DESC: {
         key: 'string',
-        keyBuilder: (value: any) => `${value}`,
-        keyOrder: -1,
+        keyBuilder: (value: any) => String(value),
+        keyOrder: Paging.DESC,
       },
       number_ASC: {
         key: 'number',
         keyBuilder: (value: any) => Number(value),
-        keyOrder: 1,
+        keyOrder: Paging.ASC,
       },
       number_DESC: {
         key: 'number',
         keyBuilder: (value: any) => Number(value),
-        keyOrder: -1,
+        keyOrder: Paging.DESC,
       },
       date_ASC: {
         key: 'date',
         keyBuilder: (value: any) => new Date(value),
-        keyOrder: 1,
+        keyOrder: Paging.ASC,
       },
       date_DESC: {
         key: 'date',
         keyBuilder: (value: any) => new Date(value),
-        keyOrder: -1,
+        keyOrder: Paging.DESC,
       },
     };
     return map[key] || {};

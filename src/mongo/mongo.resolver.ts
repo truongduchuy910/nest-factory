@@ -32,21 +32,21 @@ export class MongoResolver {
     const updated = await this.model.findOneAndUpdate(filter, input, {
       new: true,
     });
-    return updated && updated.toEntity();
+    return updated?.toEntity();
   }
 
   @Mutation(() => MongoEntity, { nullable: true })
   async createManyMongo(@Args() args: CreateManyMongoArgs) {
     const { input } = CreateManyMongoArgs.convert(args);
     const created = await this.model.create(input);
-    return created && created.map((one) => one.toEntity());
+    return created && created.map((one) => one?.toEntity());
   }
 
   @Mutation(() => MongoEntity, { nullable: true })
   async createOneMongo(@Args() args: CreateOneMongoArgs) {
     const { input } = CreateOneMongoArgs.convert(args);
     const created = await this.model.create(input);
-    return created && created.toEntity();
+    return created?.toEntity();
   }
 
   @Mutation(() => Number, { nullable: true })
@@ -60,7 +60,7 @@ export class MongoResolver {
   async deleteOneMongo(@Args() args: FindOneMongoArgs) {
     const { filter } = FindOneMongoArgs.convert(args);
     const deleted = await this.model.findOneAndDelete(filter, { new: true });
-    return deleted && deleted.toEntity();
+    return deleted?.toEntity();
   }
 
   @Query(() => MongoEntity, {
@@ -70,7 +70,7 @@ export class MongoResolver {
   async findOneMongo(@Args() args: FindOneMongoArgs) {
     const { filter } = FindOneMongoArgs.convert(args);
     const one = await this.service.findOne({ filter });
-    return one;
+    return one?.toEntity();
   }
 
   @Query(() => ManyMongoEntity, {

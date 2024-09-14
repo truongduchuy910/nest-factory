@@ -32,14 +32,16 @@ export class MongoSchema {
   @Prop({ required: false, unique: true })
   number?: Number;
 
+  @Prop({ required: false, unique: false })
+  duplicate?: Number;
+
+  /* warn: it be overrided */
   toEntity() {
     return this;
   }
 }
 
 export const MongoSchemaFactory = SchemaFactory.createForClass(MongoSchema);
-
-MongoSchemaFactory.loadClass(MongoSchema);
 
 export type MongoDocument = HydratedDocument<MongoSchema>;
 
@@ -51,44 +53,8 @@ export class MongoCRUD {
     this.model = model;
   }
 
-  toEntity(one: any) {
-    return one;
-  }
-
-  toSortPaging(key: string) {
-    const map = {
-      string_ASC: {
-        key: 'string',
-        KeyType: String,
-        order: Paging.ASC,
-      },
-      string_DESC: {
-        key: 'string',
-        KeyType: String,
-        order: Paging.DESC,
-      },
-      number_ASC: {
-        key: 'number',
-        KeyType: Number,
-        order: Paging.ASC,
-      },
-      number_DESC: {
-        key: 'number',
-        KeyType: Number,
-        order: Paging.DESC,
-      },
-      date_ASC: {
-        key: 'date',
-        KeyType: Date,
-        order: Paging.ASC,
-      },
-      date_DESC: {
-        key: 'date',
-        KeyType: Date,
-        order: Paging.DESC,
-      },
-    };
-    return map[key] || {};
+  toEntity(one?: MongoSchema) {
+    return one?.toEntity();
   }
 
   getModel() {
@@ -97,15 +63,14 @@ export class MongoCRUD {
 
   async findOne(props: FindOneProps) {
     const one = await this.model.findOne(props.filter);
-    return one && this.toEntity(one);
+    return this.toEntity(one);
   }
 
   async findMany(props: FindManyProps<MongoDocument>) {
     const { filter, sort, build } = new Paging<MongoDocument>({
+      toEntity: this.toEntity,
       cursors: props?.paging?.cursors,
       filter: props.filter,
-
-      toEntity: this.toEntity,
       search: props?.search,
       ...props.sort,
     });

@@ -32,21 +32,21 @@ export class ExampleResolver {
     const updated = await this.model.findOneAndUpdate(filter, input, {
       new: true,
     });
-    return updated && updated.toEntity();
+    return updated?.toEntity();
   }
 
   @Mutation(() => ExampleEntity, { nullable: true })
   async createManyExample(@Args() args: CreateManyExampleArgs) {
     const { input } = CreateManyExampleArgs.convert(args);
     const created = await this.model.create(input);
-    return created && created.map((one) => one.toEntity());
+    return created && created.map((one) => one?.toEntity());
   }
 
   @Mutation(() => ExampleEntity, { nullable: true })
   async createOneExample(@Args() args: CreateOneExampleArgs) {
     const { input } = CreateOneExampleArgs.convert(args);
     const created = await this.model.create(input);
-    return created && created.toEntity();
+    return created?.toEntity();
   }
 
   @Mutation(() => Number, { nullable: true })
@@ -60,7 +60,7 @@ export class ExampleResolver {
   async deleteOneExample(@Args() args: FindOneExampleArgs) {
     const { filter } = FindOneExampleArgs.convert(args);
     const deleted = await this.model.findOneAndDelete(filter, { new: true });
-    return deleted && deleted.toEntity();
+    return deleted?.toEntity();
   }
 
   @Query(() => ExampleEntity, {
@@ -70,7 +70,7 @@ export class ExampleResolver {
   async findOneExample(@Args() args: FindOneExampleArgs) {
     const { filter } = FindOneExampleArgs.convert(args);
     const one = await this.service.findOne({ filter });
-    return one;
+    return one?.toEntity();
   }
 
   @Query(() => ManyExampleEntity, {

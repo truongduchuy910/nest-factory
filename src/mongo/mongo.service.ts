@@ -11,7 +11,6 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class MongoService extends MongoCRUD {
   readonly logger = new Logger(MongoService.name);
-
   constructor(@InjectModel(MongoSchema.name) model: Model<MongoDocument>) {
     super(model);
   }

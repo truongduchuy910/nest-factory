@@ -4,10 +4,13 @@
 
 import { PagingEntity } from 'nest-gfc';
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
-import { ExampleSchema } from './example.schema';
+import { ExampleSchema, ExampleSchemaFactory } from './example.schema';
 
 @ObjectType()
 export class ExampleEntity extends ExampleSchema {
+  /*
+   * methods in this class can use in document which return by mongoose method
+   */
   @Field(() => ID, { nullable: false })
   id?: string;
 
@@ -26,7 +29,18 @@ export class ExampleEntity extends ExampleSchema {
     nullable: true,
   })
   number?: number;
+
+  @Field(() => Number, {
+    nullable: true,
+  })
+  duplicate?: number;
+
+  toEntity() {
+    return this;
+  }
 }
+
+ExampleSchemaFactory.loadClass(ExampleEntity);
 
 @ObjectType()
 export class ManyExampleEntity {

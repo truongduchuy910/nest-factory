@@ -75,7 +75,7 @@ describe('create one', () => {
   });
 });
 
-describe('create many', () => {
+describe('create many unique', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
   const tid = nanoid();
   const date = new Date();
@@ -174,6 +174,56 @@ describe('create many', () => {
       .sort((a, b) => (a > b ? 1 : -1))
       .reverse();
     expect(sorted).toStrictEqual(mongos.map((i) => i.date));
+  });
+
+  describe(`delete many`, () => {
+    beforeAll(async () => {
+      await deleteManyMongo({ where: { label: tid } });
+    });
+    test('read many', async () => {
+      const many = await findManyMongo({ where: { label: tid } });
+      expect(many?.data?.length || 0).toBe(0);
+    });
+  });
+});
+
+describe('create many with duplicate', () => {
+  const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
+  const tid = nanoid();
+  const date = new Date();
+  let data = Array.from({ length: 62 }, (_, i) => {
+    const uniq = date.setSeconds(i);
+    return {
+      id: new Types.ObjectId(),
+      string: nanoid(),
+      date: new Date(uniq),
+      number: uniq,
+      label: tid,
+    };
+  });
+  beforeAll(async () => {
+    await createManyMongo({
+      data,
+    });
+  });
+
+  test('default cursor-based pagination', async () => {
+    const limit = 3;
+    let props = {
+        where: { label: tid },
+        paging: { limit, cursors: null },
+      },
+      many: any,
+      hasNext = true,
+      mongos = [];
+    while ((many = hasNext && (await findManyMongo(props)))) {
+      const next = many?.paging?.next || {};
+      mongos.push(...many.data);
+      expect(next.count || 0).toBe(data.length - mongos.length);
+      hasNext = next.count > 0;
+      delete next.count;
+      props.paging.cursors = next;
+    }
   });
 
   describe(`delete many`, () => {

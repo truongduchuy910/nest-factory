@@ -6,7 +6,7 @@
     "format": "prettier --write \"**/*.ts\"",
     "build": "nest build",
     "start:dev": "nest start --watch",
-    "test:e2e": "jest --watch ./e2e/pris.test.ts",
+    "test:e2e": "jest --watch ./e2e/mongo.test.ts",
     "gen:mongo": "node ./scripts/mongo mongo src",
     "gen:neo": "node ./scripts/neo neo src",
     "gen": "bash ./scripts/gen.sh"

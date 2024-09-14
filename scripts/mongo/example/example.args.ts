@@ -16,13 +16,19 @@ import { ExampleEntity } from './example.entity';
 
 @InputType({ description: 'Example Public InputType' })
 export class ExampleInputType extends PartialType(
-  PickType(ExampleEntity, ['id', 'string', 'date', 'number'] as const),
+  PickType(ExampleEntity, ['id', 'label', 'string', 'date', 'number'] as const),
   InputType,
 ) {}
 
 @InputType({ description: 'Example create Public InputType.' })
 export class ExampleUpdateInputType extends PartialType(
-  PickType(ExampleInputType, ['id', 'string', 'date', 'number'] as const),
+  PickType(ExampleInputType, [
+    'id',
+    'label',
+    'string',
+    'date',
+    'number',
+  ] as const),
   InputType,
 ) {
   static toUpdateInput(data: ExampleCreateInputType) {
@@ -34,7 +40,13 @@ export class ExampleUpdateInputType extends PartialType(
 
 @InputType({ description: 'Example create Public InputType.' })
 export class ExampleCreateInputType extends PartialType(
-  PickType(ExampleInputType, ['id', 'string', 'date', 'number'] as const),
+  PickType(ExampleInputType, [
+    'id',
+    'label',
+    'string',
+    'date',
+    'number',
+  ] as const),
   InputType,
 ) {
   static toCreateInput(data: ExampleCreateInputType) {
@@ -46,7 +58,13 @@ export class ExampleCreateInputType extends PartialType(
 
 @InputType({ description: 'Example where Public InputType' })
 export class ExampleWhereInputType extends PartialType(
-  PickType(ExampleInputType, ['id', 'string', 'date', 'number'] as const),
+  PickType(ExampleInputType, [
+    'id',
+    'label',
+    'string',
+    'date',
+    'number',
+  ] as const),
   InputType,
 ) {
   /**
@@ -135,6 +153,17 @@ export class UpdateOneExampleArgs {
     const filter = ExampleIndexInputType.toFilter(args.index);
     const input = ExampleUpdateInputType.toUpdateInput(args.data);
     return { filter, input };
+  }
+}
+
+@ArgsType()
+export class CreateManyExampleArgs {
+  @Field(() => [ExampleCreateInputType])
+  data: ExampleCreateInputType[];
+
+  static convert(args: CreateManyExampleArgs) {
+    const input = args.data.map(ExampleCreateInputType.toCreateInput);
+    return { input };
   }
 }
 

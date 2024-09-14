@@ -20,6 +20,9 @@ export const EXAMPLE_NAME = 'example';
   collection: EXAMPLE_NAME,
 })
 export class ExampleSchema {
+  @Prop({ required: false })
+  label?: String;
+
   @Prop({ required: false, index: 'text', unique: true })
   string?: String;
 

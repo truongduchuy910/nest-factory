@@ -2,11 +2,12 @@
  * 📌 EXAMPLE RESOLVER
  */
 
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { ExampleEntity, ManyExampleEntity } from './example.entity';
 import {
+  CreateManyExampleArgs,
   CreateOneExampleArgs,
   FindManyExampleArgs,
   FindOneExampleArgs,
@@ -31,21 +32,28 @@ export class ExampleResolver {
     const updated = await this.model.findOneAndUpdate(filter, input, {
       new: true,
     });
-    return updated.toEntity();
+    return updated && updated.toEntity();
+  }
+
+  @Mutation(() => ExampleEntity, { nullable: true })
+  async createManyExample(@Args() args: CreateManyExampleArgs) {
+    const { input } = CreateManyExampleArgs.convert(args);
+    const created = await this.model.create(input);
+    return created && created.map((one) => one.toEntity());
   }
 
   @Mutation(() => ExampleEntity, { nullable: true })
   async createOneExample(@Args() args: CreateOneExampleArgs) {
     const { input } = CreateOneExampleArgs.convert(args);
     const created = await this.model.create(input);
-    return created.toEntity();
+    return created && created.toEntity();
   }
 
   @Mutation(() => ExampleEntity, { nullable: true })
   async deleteOneExample(@Args() args: FindOneExampleArgs) {
     const { filter } = FindOneExampleArgs.convert(args);
     const deleted = await this.model.findOneAndDelete(filter, { new: true });
-    return deleted.toEntity();
+    return deleted && deleted.toEntity();
   }
 
   @Query(() => ExampleEntity, {
@@ -72,5 +80,10 @@ export class ExampleResolver {
     });
 
     return many;
+  }
+
+  @ResolveField()
+  id(parent: ExampleDocument) {
+    return parent?.id || `${parent._id}`;
   }
 }

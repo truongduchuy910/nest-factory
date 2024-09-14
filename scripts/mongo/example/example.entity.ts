@@ -12,6 +12,9 @@ export class ExampleEntity extends ExampleSchema {
   id?: string;
 
   @Field(() => String, { nullable: true })
+  label?: string;
+
+  @Field(() => String, { nullable: true })
   string?: string;
 
   @Field(() => GraphQLISODateTime, {

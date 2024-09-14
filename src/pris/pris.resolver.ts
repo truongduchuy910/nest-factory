@@ -83,6 +83,7 @@ export class PrisResolver {
 
     console.log(many);
   }
+
   @ResolveField()
   number(parent: PrisEntity) {
     return Number(parent.number);

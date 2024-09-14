@@ -1,6 +1,26 @@
 import { uri } from '@e2e/common/config';
 import { gql, request } from 'graphql-request';
 
+export async function createManyMongo({ data }, token?: string) {
+  const { createManyMongo } = await request<any>(
+    uri,
+    gql`
+      mutation ($data: [MongoCreateInputType!]!) {
+        createManyMongo(data: $data) {
+          id
+          string
+          date
+          number
+        }
+      }
+    `,
+    { data },
+    { authorization: `Bearer ${token}` },
+  );
+
+  return createManyMongo;
+}
+
 export async function createOneMongo({ data }, token?: string) {
   const { createOneMongo } = await request<any>(
     uri,

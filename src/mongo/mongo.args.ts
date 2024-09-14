@@ -16,13 +16,19 @@ import { MongoEntity } from './mongo.entity';
 
 @InputType({ description: 'Mongo Public InputType' })
 export class MongoInputType extends PartialType(
-  PickType(MongoEntity, ['id', 'string', 'date', 'number'] as const),
+  PickType(MongoEntity, ['id', 'label', 'string', 'date', 'number'] as const),
   InputType,
 ) {}
 
 @InputType({ description: 'Mongo create Public InputType.' })
 export class MongoUpdateInputType extends PartialType(
-  PickType(MongoInputType, ['id', 'string', 'date', 'number'] as const),
+  PickType(MongoInputType, [
+    'id',
+    'label',
+    'string',
+    'date',
+    'number',
+  ] as const),
   InputType,
 ) {
   static toUpdateInput(data: MongoCreateInputType) {
@@ -34,7 +40,13 @@ export class MongoUpdateInputType extends PartialType(
 
 @InputType({ description: 'Mongo create Public InputType.' })
 export class MongoCreateInputType extends PartialType(
-  PickType(MongoInputType, ['id', 'string', 'date', 'number'] as const),
+  PickType(MongoInputType, [
+    'id',
+    'label',
+    'string',
+    'date',
+    'number',
+  ] as const),
   InputType,
 ) {
   static toCreateInput(data: MongoCreateInputType) {
@@ -46,7 +58,13 @@ export class MongoCreateInputType extends PartialType(
 
 @InputType({ description: 'Mongo where Public InputType' })
 export class MongoWhereInputType extends PartialType(
-  PickType(MongoInputType, ['id', 'string', 'date', 'number'] as const),
+  PickType(MongoInputType, [
+    'id',
+    'label',
+    'string',
+    'date',
+    'number',
+  ] as const),
   InputType,
 ) {
   /**
@@ -135,6 +153,17 @@ export class UpdateOneMongoArgs {
     const filter = MongoIndexInputType.toFilter(args.index);
     const input = MongoUpdateInputType.toUpdateInput(args.data);
     return { filter, input };
+  }
+}
+
+@ArgsType()
+export class CreateManyMongoArgs {
+  @Field(() => [MongoCreateInputType])
+  data: MongoCreateInputType[];
+
+  static convert(args: CreateManyMongoArgs) {
+    const input = args.data.map(MongoCreateInputType.toCreateInput);
+    return { input };
   }
 }
 

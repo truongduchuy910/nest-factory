@@ -20,6 +20,9 @@ export const MONGO_NAME = 'mongo';
   collection: MONGO_NAME,
 })
 export class MongoSchema {
+  @Prop({ required: false })
+  label?: String;
+
   @Prop({ required: false, index: 'text', unique: true })
   string?: String;
 

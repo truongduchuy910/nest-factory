@@ -2,11 +2,12 @@
  * 📌 MONGO RESOLVER
  */
 
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { MongoEntity, ManyMongoEntity } from './mongo.entity';
 import {
+  CreateManyMongoArgs,
   CreateOneMongoArgs,
   FindManyMongoArgs,
   FindOneMongoArgs,
@@ -31,21 +32,28 @@ export class MongoResolver {
     const updated = await this.model.findOneAndUpdate(filter, input, {
       new: true,
     });
-    return updated.toEntity();
+    return updated && updated.toEntity();
+  }
+
+  @Mutation(() => MongoEntity, { nullable: true })
+  async createManyMongo(@Args() args: CreateManyMongoArgs) {
+    const { input } = CreateManyMongoArgs.convert(args);
+    const created = await this.model.create(input);
+    return created && created.map((one) => one.toEntity());
   }
 
   @Mutation(() => MongoEntity, { nullable: true })
   async createOneMongo(@Args() args: CreateOneMongoArgs) {
     const { input } = CreateOneMongoArgs.convert(args);
     const created = await this.model.create(input);
-    return created.toEntity();
+    return created && created.toEntity();
   }
 
   @Mutation(() => MongoEntity, { nullable: true })
   async deleteOneMongo(@Args() args: FindOneMongoArgs) {
     const { filter } = FindOneMongoArgs.convert(args);
     const deleted = await this.model.findOneAndDelete(filter, { new: true });
-    return deleted.toEntity();
+    return deleted && deleted.toEntity();
   }
 
   @Query(() => MongoEntity, {
@@ -72,5 +80,10 @@ export class MongoResolver {
     });
 
     return many;
+  }
+
+  @ResolveField()
+  id(parent: MongoDocument) {
+    return parent?.id || `${parent._id}`;
   }
 }

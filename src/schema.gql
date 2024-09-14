@@ -65,6 +65,7 @@ type ManyPrisEntity {
 input MongoCreateInputType {
   date: DateTime
   id: ID
+  label: String
   number: Float
   string: String
 }
@@ -72,6 +73,7 @@ input MongoCreateInputType {
 type MongoEntity {
   date: DateTime
   id: ID!
+  label: String
   number: Float
   string: String
 }
@@ -85,6 +87,7 @@ input MongoIndexInputType {
 input MongoUpdateInputType {
   date: DateTime
   id: ID
+  label: String
   number: Float
   string: String
 }
@@ -93,11 +96,13 @@ input MongoUpdateInputType {
 input MongoWhereInputType {
   date: DateTime
   id: ID
+  label: String
   number: Float
   string: String
 }
 
 type Mutation {
+  createManyMongo(data: [MongoCreateInputType!]!): MongoEntity
   createOneMongo(data: MongoCreateInputType!): MongoEntity
 
   """create one neo"""
@@ -116,7 +121,7 @@ type Mutation {
 
 """neo entity create input"""
 input NeoCreateInputType {
-  createdAt: DateTime = "2024-09-14T07:54:18.562Z"
+  createdAt: DateTime = "2024-09-14T08:31:40.328Z"
   createdBy: String
   date: DateTime
   number: Float

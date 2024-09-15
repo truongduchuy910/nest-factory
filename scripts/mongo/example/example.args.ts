@@ -121,6 +121,16 @@ export class ExampleWhereInputType extends PartialType(
         keyBuilder: (value: any) => new Date(value),
         keyOrder: Paging.DESC,
       },
+      duplicate_ASC: {
+        key: 'duplicate',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: Paging.ASC,
+      },
+      duplicate_DESC: {
+        key: 'duplicate',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: Paging.DESC,
+      },
     };
     return map[key] || {};
   }

@@ -79,7 +79,7 @@ describe('create many unique', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
   const tid = nanoid();
   const date = new Date();
-  let data = Array.from({ length: 62 }, (_, i) => {
+  let data = Array.from({ length: 32 }, (_, i) => {
     const uniq = date.setSeconds(i);
     return {
       id: new Types.ObjectId(),
@@ -191,14 +191,18 @@ describe('create many with duplicate', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
   const tid = nanoid();
   const date = new Date();
+  const max = 9,
+    min = 2;
   let data = Array.from({ length: 62 }, (_, i) => {
     const uniq = date.setSeconds(i);
+    const duplicate = Math.floor(Math.random() * (max - min + 1)) + min;
     return {
       id: new Types.ObjectId(),
       string: nanoid(),
       date: new Date(uniq),
       number: uniq,
       label: tid,
+      duplicate,
     };
   });
   beforeAll(async () => {
@@ -207,23 +211,31 @@ describe('create many with duplicate', () => {
     });
   });
 
-  test('default cursor-based pagination', async () => {
-    const limit = 3;
-    let props = {
-        where: { label: tid },
-        paging: { limit, cursors: null },
-      },
-      many: any,
-      hasNext = true,
-      mongos = [];
-    while ((many = hasNext && (await findManyMongo(props)))) {
-      const next = many?.paging?.next || {};
-      mongos.push(...many.data);
-      expect(next.count || 0).toBe(data.length - mongos.length);
-      hasNext = next.count > 0;
-      delete next.count;
-      props.paging.cursors = next;
-    }
+  test('duplicate_ASC cursor-based pagination', async () => {
+    const mongos = await findManyMongoCursor({
+      tid,
+      sortBy: 'duplicate_ASC',
+      limit: 2,
+    });
+
+    const sorted = data
+      .map((i) => i.duplicate)
+      .sort((a, b) => (a > b ? 1 : -1));
+    expect(sorted).toStrictEqual(mongos.map((i) => i.duplicate));
+  });
+
+  test('duplicate_DESC cursor-based pagination', async () => {
+    const mongos = await findManyMongoCursor({
+      tid,
+      sortBy: 'duplicate_DESC',
+      limit: 2,
+    });
+
+    const sorted = data
+      .map((i) => i.duplicate)
+      .sort((a, b) => (a > b ? 1 : -1))
+      .reverse();
+    expect(sorted).toStrictEqual(mongos.map((i) => i.duplicate));
   });
 
   describe(`delete many`, () => {

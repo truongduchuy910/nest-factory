@@ -3,7 +3,7 @@
     "node": "20"
   },
   "scripts": {
-    "format": "prettier --write \"**/*.ts\"",
+    "format": "prettier --write \"**/*.ts\" \"**/tsconfig*\"",
     "build": "nest build",
     "start:dev": "nest start --watch",
     "test:e2e": "jest --watch ./e2e/mongo.test.ts",

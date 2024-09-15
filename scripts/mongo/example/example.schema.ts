@@ -5,7 +5,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { HydratedDocument, Model } from 'mongoose';
-import { Paging } from 'nest-mopa';
+import { DEFAULT_KEY, PagingV3 } from 'nest-mopa';
 import { FindManyProps } from 'nest-gfc';
 
 interface FindOneProps {
@@ -67,24 +67,18 @@ export class ExampleCRUD {
   }
 
   async findMany(props: FindManyProps<ExampleDocument>) {
-    const { filter, sort, build } = new Paging<ExampleDocument>({
-      toEntity: this.toEntity,
-      cursors: props?.paging?.cursors,
+    const { filter, sort, build, skip, limit } = new PagingV3<ExampleDocument>({
       filter: props.filter,
-      search: props?.search,
-      ...props.sort,
+      primary: props.sort,
+      secondary: DEFAULT_KEY,
+      search: props.search,
+      paging: props.paging,
     });
-
-    const limit = Number(props?.paging?.limit);
-    const skip = Number(props?.paging?.offset);
-
-    if (limit > 100) throw new Error('rate limit');
     let many = await this.model
       .find(filter)
       .sort(sort as any)
       .limit(limit)
       .skip(skip);
-
     let data = await build(many, this.model);
     return data;
   }

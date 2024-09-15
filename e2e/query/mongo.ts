@@ -1,8 +1,7 @@
 import { uri } from '@e2e/common/config';
 import { gql, request } from 'graphql-request';
 
-export async function findManyMongoCursor({ tid, sortBy }) {
-  const limit = 3;
+export async function findManyMongoCursor({ tid, sortBy, limit = 3 }) {
   let props = {
       where: { label: tid },
       paging: { limit, cursors: null },
@@ -11,9 +10,11 @@ export async function findManyMongoCursor({ tid, sortBy }) {
     many: any,
     hasNext = true,
     mongos = [];
+  const lengths = [];
   while ((many = hasNext && (await findManyMongo(props)))) {
     const next = many?.paging?.next || {};
     mongos.push(...many.data);
+    lengths.push(many.data.length);
     hasNext = next.count > 0;
     delete next.count;
     props.paging.cursors = next;
@@ -53,6 +54,7 @@ export async function findManyMongo(props?: any) {
           string
           date
           number
+          duplicate
         }
       }
     }

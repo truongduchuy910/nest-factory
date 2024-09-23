@@ -38,15 +38,15 @@ export class ExampleResolver {
   @Mutation(() => Number, { nullable: true })
   async deleteManyExample(@Args() args: FindManyExampleArgs) {
     const { filter } = FindManyExampleArgs.convert(args);
-    const deleted = await this.service.getModel().deleteMany({ where: filter });
-    return deleted?.count;
+    const deleted = await this.service.deleteMany(filter);
+    return deleted;
   }
 
   @Mutation(() => Number, { nullable: true })
   async createManyExample(@Args() args: CreateManyExampleArgs) {
     const { input } = CreateManyExampleArgs.convert(args);
-    const created = await this.service.getModel().createMany({ data: input });
-    return created.count;
+    const created = await this.service.createMany(input);
+    return created;
   }
 
   @Mutation(() => ExampleEntity, {
@@ -55,9 +55,9 @@ export class ExampleResolver {
   })
   async createOneExample(@Args() args: CreateOneExampleArgs) {
     const { input } = CreateOneExampleArgs.convert(args);
-    const created = await this.service.getModel().create({ data: input });
+    const created = await this.service.createOne(input);
 
-    return created && new ExampleEntity(created);
+    return created;
   }
 
   @Query(() => ExampleEntity, {
@@ -66,9 +66,8 @@ export class ExampleResolver {
   })
   async findOneExample(@Args() args: FindOneExampleArgs) {
     const { filter } = FindOneExampleArgs.convert(args);
-    const one = await this.service.getModel().findUnique({ where: filter });
-
-    return one && new ExampleEntity(one);
+    const one = this.service.findOne(filter);
+    return one;
   }
 
   @Mutation(() => ExampleEntity, {
@@ -77,12 +76,8 @@ export class ExampleResolver {
   })
   async updateOneExample(@Args() args: UpdateOneExampleArgs) {
     const { filter, input } = UpdateOneExampleArgs.convert(args);
-    const updated = await this.service.getModel().update({
-      where: filter,
-      data: input,
-    });
-
-    return updated && new ExampleEntity(updated);
+    const updated = await this.service.updateOne(filter, input);
+    return updated;
   }
 
   @Mutation(() => ExampleEntity, {
@@ -91,7 +86,7 @@ export class ExampleResolver {
   })
   async deleteOneExample(@Args() args: FindOneExampleArgs) {
     const { filter } = FindOneExampleArgs.convert(args);
-    const deleted = await this.service.getModel().delete({ where: filter });
+    const deleted = await this.service.deleteOne(filter);
     return deleted && new ExampleEntity(deleted);
   }
 }

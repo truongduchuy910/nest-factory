@@ -4,7 +4,6 @@
 
 import gql from 'graphql-tag';
 import { Injectable } from '@nestjs/common';
-import { ExampleEntity } from './example.entity';
 import { Neo4j } from 'libs/nest-nepa/src/neo4j.node';
 
 /**
@@ -24,6 +23,7 @@ export const typeDefs = gql`
     string: String @unique
     date: DateTime @unique
     number: Float @unique
+    label: String
   }
 `;
 
@@ -45,8 +45,4 @@ export class ExampleNeo4j extends Neo4j {
       number
     }
   `;
-
-  toEntity(node: any) {
-    return new ExampleEntity(node);
-  }
 }

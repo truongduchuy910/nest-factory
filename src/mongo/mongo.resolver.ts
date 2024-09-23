@@ -85,7 +85,6 @@ export class MongoResolver {
       sort,
       search,
     });
-
     return many;
   }
 

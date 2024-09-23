@@ -8,4 +8,5 @@ export default {
   moduleNameMapper: {
     "^@e2e/(.*)": "<rootDir>/e2e/$1",
   },
+  testTimeout: 20000
 };

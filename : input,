@@ -3,10 +3,9 @@
  */
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import type { Node } from 'nest-ogm';
-import { ExampleEntity, ManyExampleEntity } from './example.entity';
+import { Node } from 'nest-ogm';
+import { ExampleEntity, ManyExample } from './example.entity';
 import {
-  CreateManyExampleArgs,
   CreateOneExampleArgs,
   DeleteOneExampleArgs,
   ExampleWhereInputType,
@@ -24,14 +23,11 @@ export class ExampleResolver {
     this.node = this.service.getNode() as any;
   }
 
-  @Mutation(() => [ExampleEntity], {
-    nullable: true,
-    description: 'create many example',
-  })
+  @Mutation(() => ExampleEntity, { nullable: true })
   async createManyExample(@Args() args: CreateManyExampleArgs) {
     const { input } = CreateManyExampleArgs.convert(args);
-    const many = await this.service.createMany(input);
-    return many;
+    const created = await this.model.create(input);
+    return created && created.map((one) => one?.toEntity());
   }
 
   @Mutation(() => ExampleEntity, {
@@ -40,29 +36,26 @@ export class ExampleResolver {
   })
   async createOneExample(@Args() args: CreateOneExampleArgs) {
     const { input } = CreateOneExampleArgs.convert(args);
-    const one = await this.service.createOneV2(input);
-    return one;
+    const many = await this.node.create({ input });
+    const [created] = many?.neos;
+    return created;
   }
 
   @Mutation(() => ExampleEntity, { nullable: true })
   async updateOneExample(@Args() args: UpdateOneExampleArgs) {
     const { filter, input } = UpdateOneExampleArgs.convert(args);
-    const updated = await this.service.updateOne(filter, input);
+    const updated = await this.node.update({
+      where: filter,
+      update: input,
+    });
 
     return updated;
   }
 
-  @Mutation(() => [ExampleEntity], { nullable: true })
-  async deleteManyExample(@Args() args: FindManyExampleArgs) {
-    const { filter } = FindManyExampleArgs.convert(args);
-    const deleted = await this.service.deleteMany(filter);
-    return deleted;
-  }
-
   @Mutation(() => ExampleEntity, { nullable: true })
   async deleteOneExample(@Args() args: DeleteOneExampleArgs) {
-    const { filter } = DeleteOneExampleArgs.convert(args);
-    const deleted = await this.service.deleteOne(filter);
+    const { index } = args;
+    const deleted = await this.service.deleteOneById(index.id);
     return deleted;
   }
 
@@ -72,12 +65,12 @@ export class ExampleResolver {
   })
   async findOneExample(@Args() args: FindOneExampleArgs) {
     const { filter } = FindOneExampleArgs.convert(args);
-
-    const one = await this.service.findOne(filter);
-    return one;
+    const many = await this.node.find({ where: filter });
+    const [example] = many;
+    return example;
   }
 
-  @Query(() => ManyExampleEntity, {
+  @Query(() => ManyExample, {
     nullable: true,
     description: 'find many example with cursor-based pagination.',
   })
@@ -93,7 +86,7 @@ export class ExampleResolver {
     return many;
   }
 
-  @Query(() => ManyExampleEntity, {
+  @Query(() => ManyExample, {
     nullable: true,
     description: 'find many app with offset-based pagination.',
   })

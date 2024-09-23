@@ -80,8 +80,6 @@ export class PrisResolver {
     //  sort,
     //  search,
     //});
-
-    console.log(many);
   }
 
   @ResolveField()

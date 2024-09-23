@@ -12,6 +12,7 @@ import {
   findOneMongo,
 } from './query/mongo';
 import { Types } from 'mongoose';
+import { waitForHealth } from './common/config';
 
 describe('create one', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
@@ -90,6 +91,7 @@ describe('create many unique', () => {
     };
   });
   beforeAll(async () => {
+    await waitForHealth();
     await createManyMongo({
       data,
     });

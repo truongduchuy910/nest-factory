@@ -48,7 +48,7 @@ type ManyMongoEntity {
 }
 
 """Type of neo entity list response"""
-type ManyNeo {
+type ManyNeoEntity {
   data: [NeoEntity!]!
   paging: PagingEntity
 }
@@ -71,6 +71,7 @@ input MongoCreateInputType {
   string: String
 }
 
+"""Type of mongo entity. Base on mongo interface."""
 type MongoEntity {
   date: DateTime
   duplicate: Float
@@ -107,6 +108,9 @@ input MongoWhereInputType {
 
 type Mutation {
   createManyMongo(data: [MongoCreateInputType!]!): MongoEntity
+
+  """create many neo"""
+  createManyNeo(data: [NeoCreateInputType!]!): [NeoEntity!]
   createOneMongo(data: MongoCreateInputType!): MongoEntity
 
   """create one neo"""
@@ -115,6 +119,7 @@ type Mutation {
   """create one pris"""
   createOnePris(data: PrisCreateInputType!): PrisEntity
   deleteManyMongo(paging: PagingInput, search: String, sortBy: String, where: MongoWhereInputType): Float
+  deleteManyNeo(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): [NeoEntity!]
   deleteOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
   deleteOneNeo(index: NeoIndexInputType!): NeoEntity
 
@@ -126,9 +131,10 @@ type Mutation {
 
 """neo entity create input"""
 input NeoCreateInputType {
-  createdAt: DateTime = "2024-09-23T04:03:59.323Z"
+  createdAt: DateTime
   createdBy: String
   date: DateTime
+  label: String
   number: Float
   string: String
 }
@@ -139,6 +145,7 @@ type NeoEntity {
   createdBy: String
   date: DateTime
   id: ID
+  label: String
   number: Float
   string: String
 }
@@ -151,6 +158,7 @@ input NeoIndexInputType {
 """neo entity update input"""
 input NeoUpdateInputType {
   date: DateTime
+  label: String
   number: Float
   string: String
 }
@@ -158,6 +166,7 @@ input NeoUpdateInputType {
 """neo entity where input"""
 input NeoWhereInputType {
   id: ID
+  label: String
 }
 
 type PageNumberEntity {
@@ -274,10 +283,10 @@ type Query {
   findManyMongo(paging: PagingInput, search: String, sortBy: String, where: MongoWhereInputType): ManyMongoEntity
 
   """find many neo with cursor-based pagination."""
-  findManyNeo(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): ManyNeo
+  findManyNeo(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): ManyNeoEntity
 
   """find many app with offset-based pagination."""
-  findManyNeoWithPage(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): ManyNeo
+  findManyNeoWithPage(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): ManyNeoEntity
 
   """find many pris"""
   findManyPris(paging: PagingInput, search: String, sortBy: String, where: PrisWhereInputType): ManyPrisEntity

@@ -3,9 +3,10 @@
  */
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Node } from 'nest-ogm';
-import { NeoEntity, ManyNeo } from './neo.entity';
+import type { Node } from 'nest-ogm';
+import { NeoEntity, ManyNeoEntity } from './neo.entity';
 import {
+  CreateManyNeoArgs,
   CreateOneNeoArgs,
   DeleteOneNeoArgs,
   NeoWhereInputType,
@@ -23,32 +24,45 @@ export class NeoResolver {
     this.node = this.service.getNode() as any;
   }
 
+  @Mutation(() => [NeoEntity], {
+    nullable: true,
+    description: 'create many neo',
+  })
+  async createManyNeo(@Args() args: CreateManyNeoArgs) {
+    const { input } = CreateManyNeoArgs.convert(args);
+    const many = await this.service.createMany(input);
+    return many;
+  }
+
   @Mutation(() => NeoEntity, {
     nullable: true,
     description: 'create one neo',
   })
   async createOneNeo(@Args() args: CreateOneNeoArgs) {
     const { input } = CreateOneNeoArgs.convert(args);
-    const many = await this.node.create({ input });
-    const [created] = many?.neos;
-    return created;
+    const one = await this.service.createOneV2(input);
+    return one;
   }
 
   @Mutation(() => NeoEntity, { nullable: true })
   async updateOneNeo(@Args() args: UpdateOneNeoArgs) {
     const { filter, input } = UpdateOneNeoArgs.convert(args);
-    const updated = await this.node.update({
-      where: filter,
-      update: input,
-    });
+    const updated = await this.service.updateOne(filter, input);
 
     return updated;
   }
 
+  @Mutation(() => [NeoEntity], { nullable: true })
+  async deleteManyNeo(@Args() args: FindManyNeoArgs) {
+    const { filter } = FindManyNeoArgs.convert(args);
+    const deleted = await this.service.deleteMany(filter);
+    return deleted;
+  }
+
   @Mutation(() => NeoEntity, { nullable: true })
   async deleteOneNeo(@Args() args: DeleteOneNeoArgs) {
-    const { index } = args;
-    const deleted = await this.service.deleteOneById(index.id);
+    const { filter } = DeleteOneNeoArgs.convert(args);
+    const deleted = await this.service.deleteOne(filter);
     return deleted;
   }
 
@@ -58,12 +72,12 @@ export class NeoResolver {
   })
   async findOneNeo(@Args() args: FindOneNeoArgs) {
     const { filter } = FindOneNeoArgs.convert(args);
-    const many = await this.node.find({ where: filter });
-    const [neo] = many;
-    return neo;
+
+    const one = await this.service.findOne(filter);
+    return one;
   }
 
-  @Query(() => ManyNeo, {
+  @Query(() => ManyNeoEntity, {
     nullable: true,
     description: 'find many neo with cursor-based pagination.',
   })
@@ -79,7 +93,7 @@ export class NeoResolver {
     return many;
   }
 
-  @Query(() => ManyNeo, {
+  @Query(() => ManyNeoEntity, {
     nullable: true,
     description: 'find many app with offset-based pagination.',
   })

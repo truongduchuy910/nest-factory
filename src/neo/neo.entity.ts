@@ -9,7 +9,6 @@ import {
   ID,
   ObjectType,
 } from '@nestjs/graphql';
-import { pickBy } from 'lodash';
 
 import { NeoInterface } from './neo.interface';
 import { PagingEntity } from 'nest-gfc';
@@ -46,60 +45,23 @@ export class NeoEntity implements NeoInterface {
   })
   date?: Date;
 
-  constructor(partial: any) {
-    Object.assign(this, partial);
-    if (!this.createdAt) {
-      this.createdAt = new Date();
-    } else {
-      this.createdAt = new Date(this.createdAt);
-    }
+  @Field(() => String, {
+    nullable: true,
+  })
+  label?: string;
+
+  constructor(node) {
+    Object.assign(this, node);
+    this.date = this.date && new Date(this.date);
   }
 
-  /**
-   * only attributes
-   */
-
-  lean(): NeoInterface {
-    return {
-      id: this.id,
-      createdAt: this.createdAt,
-      createdBy: this.createdBy,
-    };
-  }
-
-  toNode() {
-    return {
-      createdAt: this.createdAt.toISOString(),
-      createdBy: this.createdBy,
-    };
-  }
-
-  /*
-   * DPRECATED
-   * Use NeoUpdateInputType.toUpdateInput instead
-   */
-  toUpdateInput() {
-    return {
-      createdAt: this.createdAt.toISOString(),
-      createdBy: this.createdBy,
-    };
-  }
-
-  /*
-   * DPRECATED
-   * Use NeoCreateInputType.toCreateInput instead
-   */
-  toCreateInput() {
-    return pickBy({
-      createdAt: this.createdAt.toISOString(),
-      createdBy: this.createdBy,
-      number: this.number,
-    });
+  toEntity() {
+    return this;
   }
 }
 
 @ObjectType({ description: 'Type of neo entity list response' })
-export class ManyNeo {
+export class ManyNeoEntity {
   @Field(() => [NeoEntity], { defaultValue: [] })
   data: Array<NeoEntity>;
 

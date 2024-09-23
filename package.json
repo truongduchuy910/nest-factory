@@ -8,9 +8,10 @@
     "start:dev": "nest start --watch",
     "test:mongo": "npm run gen:mongo; jest ./e2e/mongo.test.ts",
     "test:neo": "npm run gen:neo; jest ./e2e/neo.test.ts",
+    "test": "npm run gen; jest ./e2e/",
     "gen:mongo": "node ./scripts/mongo mongo src",
     "gen:neo": "node ./scripts/neo neo src",
-    "gen": "bash ./scripts/gen.sh"
+    "gen": "npm run gen:mongo; npm run gen:neo"
   },
   "main": "dist/main.js",
   "dependencies": {

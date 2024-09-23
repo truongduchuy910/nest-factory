@@ -9,7 +9,6 @@ import {
   ID,
   ObjectType,
 } from '@nestjs/graphql';
-import { pickBy } from 'lodash';
 
 import { ExampleInterface } from './example.interface';
 import { PagingEntity } from 'nest-gfc';
@@ -46,60 +45,23 @@ export class ExampleEntity implements ExampleInterface {
   })
   date?: Date;
 
-  constructor(partial: any) {
-    Object.assign(this, partial);
-    if (!this.createdAt) {
-      this.createdAt = new Date();
-    } else {
-      this.createdAt = new Date(this.createdAt);
-    }
+  @Field(() => String, {
+    nullable: true,
+  })
+  label?: string;
+
+  constructor(node) {
+    Object.assign(this, node);
+    this.date = this.date && new Date(this.date);
   }
 
-  /**
-   * only attributes
-   */
-
-  lean(): ExampleInterface {
-    return {
-      id: this.id,
-      createdAt: this.createdAt,
-      createdBy: this.createdBy,
-    };
-  }
-
-  toNode() {
-    return {
-      createdAt: this.createdAt.toISOString(),
-      createdBy: this.createdBy,
-    };
-  }
-
-  /*
-   * DPRECATED
-   * Use ExampleUpdateInputType.toUpdateInput instead
-   */
-  toUpdateInput() {
-    return {
-      createdAt: this.createdAt.toISOString(),
-      createdBy: this.createdBy,
-    };
-  }
-
-  /*
-   * DPRECATED
-   * Use ExampleCreateInputType.toCreateInput instead
-   */
-  toCreateInput() {
-    return pickBy({
-      createdAt: this.createdAt.toISOString(),
-      createdBy: this.createdBy,
-      number: this.number,
-    });
+  toEntity() {
+    return this;
   }
 }
 
 @ObjectType({ description: 'Type of example entity list response' })
-export class ManyExample {
+export class ManyExampleEntity {
   @Field(() => [ExampleEntity], { defaultValue: [] })
   data: Array<ExampleEntity>;
 

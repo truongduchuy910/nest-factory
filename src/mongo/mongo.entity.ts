@@ -3,10 +3,19 @@
  */
 
 import { PagingEntity } from 'nest-gfc';
-import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
+import {
+  Directive,
+  Field,
+  GraphQLISODateTime,
+  ID,
+  ObjectType,
+} from '@nestjs/graphql';
 import { MongoSchema, MongoSchemaFactory } from './mongo.schema';
 
-@ObjectType()
+@ObjectType({
+  description: 'Type of mongo entity. Base on mongo interface.',
+})
+@Directive(`@key(fields: "id")`)
 export class MongoEntity extends MongoSchema {
   /*
    * methods in this class can use in document which return by mongoose method

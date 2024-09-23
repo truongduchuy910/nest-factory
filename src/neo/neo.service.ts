@@ -15,4 +15,8 @@ export class NeoService extends NeoNeo4j {
   constructor(@InjectNode(NeoEntity.nodeName) node: Node) {
     super(node as any);
   }
+
+  toEntity(node: any) {
+    return new NeoEntity(node);
+  }
 }

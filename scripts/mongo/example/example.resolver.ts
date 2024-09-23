@@ -85,7 +85,6 @@ export class ExampleResolver {
       sort,
       search,
     });
-
     return many;
   }
 

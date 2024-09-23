@@ -10,9 +10,10 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { PagingInput } from 'nest-gfc';
-import { isEmpty, pickBy } from 'lodash';
+import { isEmpty, merge, pickBy } from 'lodash';
 
 import { NeoEntity } from './neo.entity';
+import { Paging } from 'nest-nepa';
 
 @InputType({ description: 'neo entity general input' })
 export class NeoInputType extends PartialType(
@@ -23,9 +24,10 @@ export class NeoInputType extends PartialType(
     'number',
     'string',
     'date',
+    'label',
   ] as const),
   InputType,
-) {}
+) { }
 
 @InputType({ description: 'neo entity create input' })
 export class NeoCreateInputType extends PartialType(
@@ -35,39 +37,34 @@ export class NeoCreateInputType extends PartialType(
     'number',
     'string',
     'date',
+    'label',
   ] as const),
   InputType,
 ) {
   static toCreateInput(data: NeoCreateInputType) {
-    return pickBy({
-      createdAt: data.createdAt,
-      createdBy: data.createdBy,
-      number: data.number,
-      string: data.string,
-      date: data.date.toISOString(),
-    });
+    const input = {
+      date: data?.date && new Date(data.date).toISOString(),
+    };
+    return merge(data, input);
   }
 }
 
 @InputType({ description: 'neo entity update input' })
 export class NeoUpdateInputType extends PartialType(
-  PickType(NeoInputType, ['number', 'string', 'date'] as const),
+  PickType(NeoInputType, ['number', 'string', 'date', 'label'] as const),
   InputType,
 ) {
   static toUpdateInput(data: NeoCreateInputType) {
-    return {
-      createdAt: data.createdAt && data.createdAt.toISOString(),
-      createdBy: data.createdBy,
-      number: data.number,
-      string: data.string,
-      date: data.date && data.date.toISOString(),
-    };
+    const input = pickBy({
+      date: data?.date && new Date(data.date),
+    });
+    return merge(data, input);
   }
 }
 
 @InputType({ description: 'neo entity where input' })
 export class NeoWhereInputType extends PartialType(
-  PickType(NeoInputType, ['id'] as const),
+  PickType(NeoInputType, ['id', 'label'] as const),
   InputType,
 ) {
   /**
@@ -75,14 +72,21 @@ export class NeoWhereInputType extends PartialType(
    */
   static toFilter(where: NeoWhereInputType | undefined) {
     const filter = {} as any;
-    if (where?.id) {
-      filter.id = where.id;
-    }
-    return pickBy(filter);
+    return merge(where, filter);
   }
 
   static toSort(key: string) {
     const map = {
+      string_ASC: {
+        key: 'string',
+        keyBuilder: (value: any) => String(value),
+        keyOrder: Paging.ASC,
+      },
+      string_DESC: {
+        key: 'string',
+        keyBuilder: (value: any) => String(value),
+        keyOrder: Paging.DESC,
+      },
       createdBy_ASC: {
         key: 'createdBy',
         keyBuilder: (value: any) => `${value}`,
@@ -103,15 +107,25 @@ export class NeoWhereInputType extends PartialType(
         keyBuilder: (value: any) => Number(value),
         keyOrder: 'DESC',
       },
-      createdAt_ASC: {
-        key: 'createdAt',
-        keyBuilder: (value: any) => `${value}`,
-        keyOrder: 'ASC',
+      date_ASC: {
+        key: 'date',
+        keyBuilder: (value: any) => new Date(value).toISOString(),
+        keyOrder: Paging.ASC,
       },
-      createdAt_DESC: {
-        key: 'createdAt',
-        keyBuilder: (value: any) => `${value}`,
-        keyOrder: 'DESC',
+      date_DESC: {
+        key: 'date',
+        keyBuilder: (value: any) => new Date(value).toISOString(),
+        keyOrder: Paging.DESC,
+      },
+      duplicate_ASC: {
+        key: 'duplicate',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: Paging.ASC,
+      },
+      duplicate_DESC: {
+        key: 'duplicate',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: Paging.DESC,
       },
     };
     return map[key] || {};
@@ -176,6 +190,17 @@ export class FindManyNeoArgs {
 }
 
 @ArgsType()
+export class CreateManyNeoArgs {
+  @Field(() => [NeoCreateInputType])
+  data: NeoCreateInputType[];
+
+  static convert(args: CreateManyNeoArgs) {
+    const input = args.data.map(NeoCreateInputType.toCreateInput);
+    return { input };
+  }
+}
+
+@ArgsType()
 export class CreateOneNeoArgs {
   @Field()
   data: NeoCreateInputType;
@@ -205,4 +230,9 @@ export class UpdateOneNeoArgs {
 export class DeleteOneNeoArgs {
   @Field()
   index: NeoIndexInputType;
+
+  static convert(args: DeleteOneNeoArgs) {
+    const filter = NeoIndexInputType.toFilter(args.index);
+    return { filter };
+  }
 }

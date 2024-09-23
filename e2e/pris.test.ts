@@ -36,7 +36,6 @@ describe('create', () => {
   test('read many', async () => {
     const many = await findManyPris({ where: { id: data.id } });
     expect(1).toBeTruthy();
-    console.log(many);
     //expect(many.paging.count).toBe(1);
     //expect(many.paging.next).not.toBeTruthy();
     //const [first] = many.data;

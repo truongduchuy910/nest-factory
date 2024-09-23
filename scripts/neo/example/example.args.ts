@@ -10,9 +10,10 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { PagingInput } from 'nest-gfc';
-import { isEmpty, pickBy } from 'lodash';
+import { isEmpty, merge, pickBy } from 'lodash';
 
 import { ExampleEntity } from './example.entity';
+import { Paging } from 'nest-nepa';
 
 @InputType({ description: 'example entity general input' })
 export class ExampleInputType extends PartialType(
@@ -23,9 +24,10 @@ export class ExampleInputType extends PartialType(
     'number',
     'string',
     'date',
+    'label',
   ] as const),
   InputType,
-) {}
+) { }
 
 @InputType({ description: 'example entity create input' })
 export class ExampleCreateInputType extends PartialType(
@@ -35,39 +37,34 @@ export class ExampleCreateInputType extends PartialType(
     'number',
     'string',
     'date',
+    'label',
   ] as const),
   InputType,
 ) {
   static toCreateInput(data: ExampleCreateInputType) {
-    return pickBy({
-      createdAt: data.createdAt,
-      createdBy: data.createdBy,
-      number: data.number,
-      string: data.string,
-      date: data.date.toISOString(),
-    });
+    const input = {
+      date: data?.date && new Date(data.date).toISOString(),
+    };
+    return merge(data, input);
   }
 }
 
 @InputType({ description: 'example entity update input' })
 export class ExampleUpdateInputType extends PartialType(
-  PickType(ExampleInputType, ['number', 'string', 'date'] as const),
+  PickType(ExampleInputType, ['number', 'string', 'date', 'label'] as const),
   InputType,
 ) {
   static toUpdateInput(data: ExampleCreateInputType) {
-    return {
-      createdAt: data.createdAt && data.createdAt.toISOString(),
-      createdBy: data.createdBy,
-      number: data.number,
-      string: data.string,
-      date: data.date && data.date.toISOString(),
-    };
+    const input = pickBy({
+      date: data?.date && new Date(data.date),
+    });
+    return merge(data, input);
   }
 }
 
 @InputType({ description: 'example entity where input' })
 export class ExampleWhereInputType extends PartialType(
-  PickType(ExampleInputType, ['id'] as const),
+  PickType(ExampleInputType, ['id', 'label'] as const),
   InputType,
 ) {
   /**
@@ -75,14 +72,21 @@ export class ExampleWhereInputType extends PartialType(
    */
   static toFilter(where: ExampleWhereInputType | undefined) {
     const filter = {} as any;
-    if (where?.id) {
-      filter.id = where.id;
-    }
-    return pickBy(filter);
+    return merge(where, filter);
   }
 
   static toSort(key: string) {
     const map = {
+      string_ASC: {
+        key: 'string',
+        keyBuilder: (value: any) => String(value),
+        keyOrder: Paging.ASC,
+      },
+      string_DESC: {
+        key: 'string',
+        keyBuilder: (value: any) => String(value),
+        keyOrder: Paging.DESC,
+      },
       createdBy_ASC: {
         key: 'createdBy',
         keyBuilder: (value: any) => `${value}`,
@@ -103,15 +107,25 @@ export class ExampleWhereInputType extends PartialType(
         keyBuilder: (value: any) => Number(value),
         keyOrder: 'DESC',
       },
-      createdAt_ASC: {
-        key: 'createdAt',
-        keyBuilder: (value: any) => `${value}`,
-        keyOrder: 'ASC',
+      date_ASC: {
+        key: 'date',
+        keyBuilder: (value: any) => new Date(value).toISOString(),
+        keyOrder: Paging.ASC,
       },
-      createdAt_DESC: {
-        key: 'createdAt',
-        keyBuilder: (value: any) => `${value}`,
-        keyOrder: 'DESC',
+      date_DESC: {
+        key: 'date',
+        keyBuilder: (value: any) => new Date(value).toISOString(),
+        keyOrder: Paging.DESC,
+      },
+      duplicate_ASC: {
+        key: 'duplicate',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: Paging.ASC,
+      },
+      duplicate_DESC: {
+        key: 'duplicate',
+        keyBuilder: (value: any) => Number(value),
+        keyOrder: Paging.DESC,
       },
     };
     return map[key] || {};
@@ -176,6 +190,17 @@ export class FindManyExampleArgs {
 }
 
 @ArgsType()
+export class CreateManyExampleArgs {
+  @Field(() => [ExampleCreateInputType])
+  data: ExampleCreateInputType[];
+
+  static convert(args: CreateManyExampleArgs) {
+    const input = args.data.map(ExampleCreateInputType.toCreateInput);
+    return { input };
+  }
+}
+
+@ArgsType()
 export class CreateOneExampleArgs {
   @Field()
   data: ExampleCreateInputType;
@@ -205,4 +230,9 @@ export class UpdateOneExampleArgs {
 export class DeleteOneExampleArgs {
   @Field()
   index: ExampleIndexInputType;
+
+  static convert(args: DeleteOneExampleArgs) {
+    const filter = ExampleIndexInputType.toFilter(args.index);
+    return { filter };
+  }
 }

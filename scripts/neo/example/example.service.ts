@@ -15,4 +15,8 @@ export class ExampleService extends ExampleNeo4j {
   constructor(@InjectNode(ExampleEntity.nodeName) node: Node) {
     super(node as any);
   }
+
+  toEntity(node: any) {
+    return new ExampleEntity(node);
+  }
 }

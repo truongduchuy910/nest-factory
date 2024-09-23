@@ -87,6 +87,14 @@ input ExampleWhereInputType {
   string: String
 }
 
+type ManyExampleEntity {
+  """data return as array"""
+  data: [ExampleEntity!]!
+
+  """pagination"""
+  paging: PagingEntity
+}
+
 type ManyMongoEntity {
   """data return as array"""
   data: [MongoEntity!]!
@@ -338,6 +346,9 @@ input PrisWhereInputType {
 }
 
 type Query {
+  """find many example"""
+  findManyExample(paging: PagingInput, search: String, sortBy: String, where: ExampleWhereInputType): ManyExampleEntity
+
   """find many mongo"""
   findManyMongo(paging: PagingInput, search: String, sortBy: String, where: MongoWhereInputType): ManyMongoEntity
 

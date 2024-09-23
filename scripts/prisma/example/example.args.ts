@@ -26,7 +26,7 @@ export class ExampleInputType extends PartialType(
     'label',
   ] as const),
   InputType,
-) { }
+) {}
 
 @InputType({ description: 'Example create Public InputType.' })
 export class ExampleUpdateInputType extends PartialType(

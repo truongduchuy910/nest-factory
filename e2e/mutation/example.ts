@@ -3,9 +3,9 @@ import { gql, request } from 'graphql-request';
 
 export async function createManyExample({ data }, token?: string) {
   data = data.map((i: any) => {
-    delete i.id
-    return i
-  })
+    delete i.id;
+    return i;
+  });
   const { createManyExample } = await request<any>(
     uri,
     gql`

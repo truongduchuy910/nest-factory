@@ -97,8 +97,37 @@ describe('create many unique', () => {
 
   test('read many without limit', async () => {
     expect(1).toBeTruthy();
-    //const many = await findManyExample({ where: { label: tid } });
-    //expect(many.data.length).toBe(data.length);
+    const many = await findManyExample({ where: { label: tid } });
+    expect(many.data.length).toBe(data.length);
+  });
+
+  test('read many with limit 2', async () => {
+    const limit = 2;
+    let props = {
+      where: { label: tid },
+      paging: { limit },
+    };
+    const many = await findManyExample(props);
+    expect(many.data.length).toBe(limit);
+  });
+
+  test('default cursor-based pagination', async () => {
+    const limit = 3;
+    let props = {
+        where: { label: tid },
+        paging: { limit, cursors: null },
+      },
+      many: any,
+      hasNext = true,
+      mongos = [];
+    while ((many = hasNext && (await findManyExample(props)))) {
+      const next = many?.paging?.next || {};
+      mongos.push(...many.data);
+      expect(next.count || 0).toBe(data.length - mongos.length);
+      hasNext = next.count > 0;
+      delete next.count;
+      props.paging.cursors = next;
+    }
   });
 
   describe(`delete many`, () => {
@@ -107,8 +136,8 @@ describe('create many unique', () => {
     });
 
     test('read many', async () => {
-      expect(1).toBeTruthy();
-      //const many = await findManyExample({ where: { label: tid } }); expect(many?.data?.length || 0).toBe(0);
+      const many = await findManyExample({ where: { label: tid } });
+      expect(many?.data?.length || 0).toBe(0);
     });
   });
 });

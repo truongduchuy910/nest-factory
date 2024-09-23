@@ -4,7 +4,7 @@
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
-import { ExampleEntity } from './example.entity';
+import { ExampleEntity, ManyExampleEntity } from './example.entity';
 import { ExampleService } from './example.service';
 import {
   CreateManyExampleArgs,
@@ -19,6 +19,21 @@ export class ExampleResolver {
   readonly logger = new Logger(ExampleResolver.name);
 
   constructor(private readonly service: ExampleService) {}
+
+  @Query(() => ManyExampleEntity, {
+    nullable: true,
+    description: 'find many example',
+  })
+  async findManyExample(@Args() args: FindManyExampleArgs) {
+    const { filter, paging, sort, search } = FindManyExampleArgs.convert(args);
+    const many = await this.service.findMany({
+      filter,
+      paging,
+      sort,
+      search,
+    });
+    return many;
+  }
 
   @Mutation(() => Number, { nullable: true })
   async deleteManyExample(@Args() args: FindManyExampleArgs) {

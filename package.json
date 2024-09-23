@@ -12,7 +12,8 @@
     "test": "npm run gen; jest ./e2e/",
     "gen:mongo": "node ./scripts/mongo mongo src",
     "gen:neo": "node ./scripts/neo neo src",
-    "gen": "npm run gen:mongo; npm run gen:neo"
+    "gen:prisma": "node ./scripts/prisma example src",
+    "gen": "npm run gen:mongo; npm run gen:neo; npm run gen:prisma"
   },
   "main": "dist/main.js",
   "dependencies": {

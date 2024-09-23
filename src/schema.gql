@@ -157,12 +157,16 @@ type Mutation {
   createOnePris(data: PrisCreateInputType!): PrisEntity
   deleteManyMongo(paging: PagingInput, search: String, sortBy: String, where: MongoWhereInputType): Float
   deleteManyNeo(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): [NeoEntity!]
+
+  """delete one example"""
   deleteOneExample(index: ExampleIndexInputType!, label: String): ExampleEntity
   deleteOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
   deleteOneNeo(index: NeoIndexInputType!): NeoEntity
 
   """delete one pris"""
   deleteOnePris(index: PrisIndexInputType!, label: String): PrisEntity
+
+  """update one example"""
   updateOneExample(data: ExampleUpdateInputType!, index: ExampleIndexInputType!): ExampleEntity
   updateOneMongo(data: MongoUpdateInputType!, index: MongoIndexInputType!): MongoEntity
   updateOneNeo(data: NeoUpdateInputType!, index: NeoIndexInputType!): NeoEntity

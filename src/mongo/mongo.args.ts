@@ -230,7 +230,6 @@ export class FindManyMongoArgs {
   static convert(args: FindManyMongoArgs) {
     const filter = MongoWhereInputType.toFilter(args.where);
     const sort = MongoWhereInputType.toSort(args.sortBy);
-    const merged = merge(args, { filter, sort });
-    return pickBy(merged);
+    return { ...args, filter, sort };
   }
 }

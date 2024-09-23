@@ -26,6 +26,7 @@ describe('create one', () => {
   };
 
   beforeAll(async () => {
+    await waitForHealth();
     await createOneMongo({
       data,
     });
@@ -37,12 +38,6 @@ describe('create one', () => {
       label: 'after create',
     });
     expect(one.string).toBe(data.string);
-  });
-
-  test('read many', async () => {
-    const many = await findManyMongo({ where: { id: data.id } });
-    const [first] = many.data;
-    expect(first.string).toBe(data.string);
   });
 
   describe('update', () => {

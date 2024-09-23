@@ -11,7 +11,8 @@ import { Neo4j } from 'libs/nest-nepa/src/neo4j.node';
  */
 
 export const typeDefs = gql`
-  type Neo @fulltext(indexes: [{ indexName: "text", fields: ["createdBy"] }]) {
+  type Neo
+    @fulltext(indexes: [{ indexName: "text", fields: ["createdBy"] }]) {
     " neo identity "
     id: ID @id
     " created at "

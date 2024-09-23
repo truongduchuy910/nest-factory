@@ -5,8 +5,9 @@ import {
 } from './mutation/example';
 import { customAlphabet } from 'nanoid';
 import { findOneExample } from './query/example';
+import { waitForHealth } from './common/config';
 
-describe('create', () => {
+describe('create one', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
   const min = 0,
     max = 9999;
@@ -18,7 +19,7 @@ describe('create', () => {
   };
 
   beforeAll(async () => {
-    delete data.id;
+    await waitForHealth();
     const created = await createOneExample({
       data,
     });

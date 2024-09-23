@@ -22,6 +22,7 @@ export async function createManyExample({ data }, token?: string) {
 }
 
 export async function createOneExample({ data }, token?: string) {
+  delete data.id;
   const { createOneExample } = await request<any>(
     uri,
     gql`

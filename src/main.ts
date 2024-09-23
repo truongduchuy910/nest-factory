@@ -14,11 +14,11 @@ async function bootstrap() {
   const mode = configService.get('MODE');
   app.enableCors(cors[mode]);
 
-  console.log(cors?.origin);
   console.log(yellow(`  _      _      _    `.repeat(2)));
   console.log(yellow(`>(.)__ <(.)__ =(.)__ `.repeat(2)));
   console.log(yellow(` (___/  (___/  (___/ `.repeat(2)));
 
   await app.listen(3000);
 }
+
 bootstrap();

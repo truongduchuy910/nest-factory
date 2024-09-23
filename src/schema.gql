@@ -126,7 +126,7 @@ type Mutation {
 
 """neo entity create input"""
 input NeoCreateInputType {
-  createdAt: DateTime = "2024-09-15T16:21:10.956Z"
+  createdAt: DateTime = "2024-09-23T03:34:35.640Z"
   createdBy: String
   date: DateTime
   number: Float

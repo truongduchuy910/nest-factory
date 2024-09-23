@@ -27,7 +27,7 @@ export class ExampleInputType extends PartialType(
     'label',
   ] as const),
   InputType,
-) { }
+) {}
 
 @InputType({ description: 'example entity create input' })
 export class ExampleCreateInputType extends PartialType(

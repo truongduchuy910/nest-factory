@@ -39,6 +39,40 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+"""Example create Public InputType."""
+input ExampleCreateInputType {
+  created_at: DateTime
+  date: DateTime
+  duplicate: Float
+  number: Float
+  string: String
+}
+
+"""Type of example entity. Base on example interface."""
+type ExampleEntity {
+  created_at: DateTime
+  date: DateTime
+  duplicate: Float
+  id: Float
+  number: Float
+  string: String
+}
+
+"""Example index Public InputType"""
+input ExampleIndexInputType {
+  id: Float
+}
+
+"""Example create Public InputType."""
+input ExampleUpdateInputType {
+  created_at: DateTime
+  date: DateTime
+  duplicate: Float
+  id: Float
+  number: Float
+  string: String
+}
+
 type ManyMongoEntity {
   """data return as array"""
   data: [MongoEntity!]!
@@ -111,6 +145,9 @@ type Mutation {
 
   """create many neo"""
   createManyNeo(data: [NeoCreateInputType!]!): [NeoEntity!]
+
+  """create one example"""
+  createOneExample(data: ExampleCreateInputType!): ExampleEntity
   createOneMongo(data: MongoCreateInputType!): MongoEntity
 
   """create one neo"""
@@ -120,11 +157,13 @@ type Mutation {
   createOnePris(data: PrisCreateInputType!): PrisEntity
   deleteManyMongo(paging: PagingInput, search: String, sortBy: String, where: MongoWhereInputType): Float
   deleteManyNeo(paging: PagingInput, search: String, sortBy: String, where: NeoWhereInputType): [NeoEntity!]
+  deleteOneExample(index: ExampleIndexInputType!, label: String): ExampleEntity
   deleteOneMongo(index: MongoIndexInputType!, label: String): MongoEntity
   deleteOneNeo(index: NeoIndexInputType!): NeoEntity
 
   """delete one pris"""
   deleteOnePris(index: PrisIndexInputType!, label: String): PrisEntity
+  updateOneExample(data: ExampleUpdateInputType!, index: ExampleIndexInputType!): ExampleEntity
   updateOneMongo(data: MongoUpdateInputType!, index: MongoIndexInputType!): MongoEntity
   updateOneNeo(data: NeoUpdateInputType!, index: NeoIndexInputType!): NeoEntity
 }
@@ -290,6 +329,9 @@ type Query {
 
   """find many pris"""
   findManyPris(paging: PagingInput, search: String, sortBy: String, where: PrisWhereInputType): ManyPrisEntity
+
+  """find one example"""
+  findOneExample(index: ExampleIndexInputType!, label: String): ExampleEntity
 
   """find one mongo"""
   findOneMongo(index: MongoIndexInputType!, label: String): MongoEntity

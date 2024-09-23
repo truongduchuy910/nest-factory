@@ -1,14 +1,14 @@
 /**
- * 📌 PRIS SERVICE
+ * 📌 EXAMPLE SERVICE
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { PrisCRUD } from './pris.schema';
+import { ExampleCRUD } from './example.schema';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
-export class PrisService extends PrisCRUD {
-  readonly logger = new Logger(PrisService.name);
+export class ExampleService extends ExampleCRUD {
+  readonly logger = new Logger(ExampleService.name);
 
   constructor(prisma: PrismaService) {
     super(prisma);

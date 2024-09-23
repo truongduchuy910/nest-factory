@@ -20,3 +20,12 @@ model Pris {
   number BigInt @unique
   date DateTime @unique
 }
+
+model example {
+  id    Int     @default(autoincrement()) @id
+  created_at DateTime @unique @default(now())
+  string String @unique
+  number Int @unique
+  date DateTime @unique
+  duplicate Int?
+}

@@ -27,7 +27,7 @@ export class NeoInputType extends PartialType(
     'label',
   ] as const),
   InputType,
-) { }
+) {}
 
 @InputType({ description: 'neo entity create input' })
 export class NeoCreateInputType extends PartialType(

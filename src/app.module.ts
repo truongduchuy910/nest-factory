@@ -13,6 +13,7 @@ import { MongoModule } from './mongo/mongo.module';
 import { PrisModule } from './pris/pris.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppController } from './app.controller';
+import { ExampleModule } from './example/example.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AppController } from './app.controller';
     NeoModule,
     PrisModule,
     PrismaModule,
+    ExampleModule,
   ],
   controllers: [AppController],
 })

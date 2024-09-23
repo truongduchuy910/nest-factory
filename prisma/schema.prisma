@@ -23,9 +23,11 @@ model Pris {
 
 model example {
   id    Int     @default(autoincrement()) @id
-  created_at DateTime @unique @default(now())
+  created_at DateTime @default(now())
+
   string String @unique
   number Int @unique
   date DateTime @unique
   duplicate Int?
+  label String?
 }

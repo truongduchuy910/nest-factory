@@ -23,9 +23,10 @@ export class ExampleInputType extends PartialType(
     'number',
     'duplicate',
     'created_at',
+    'label',
   ] as const),
   InputType,
-) {}
+) { }
 
 @InputType({ description: 'Example create Public InputType.' })
 export class ExampleUpdateInputType extends PartialType(
@@ -36,6 +37,7 @@ export class ExampleUpdateInputType extends PartialType(
     'number',
     'duplicate',
     'created_at',
+    'label',
   ] as const),
   InputType,
 ) {
@@ -59,6 +61,7 @@ export class ExampleCreateInputType extends PartialType(
     'number',
     'duplicate',
     'created_at',
+    'label',
   ] as const),
   InputType,
 ) {
@@ -81,6 +84,7 @@ export class ExampleWhereInputType extends PartialType(
     'number',
     'duplicate',
     'created_at',
+    'label',
   ] as const),
   InputType,
 ) {

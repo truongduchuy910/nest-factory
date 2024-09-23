@@ -2,16 +2,15 @@ import { uri } from '@e2e/common/config';
 import { gql, request } from 'graphql-request';
 
 export async function createManyExample({ data }, token?: string) {
+  data = data.map((i: any) => {
+    delete i.id
+    return i
+  })
   const { createManyExample } = await request<any>(
     uri,
     gql`
       mutation ($data: [ExampleCreateInputType!]!) {
-        createManyExample(data: $data) {
-          id
-          string
-          date
-          number
-        }
+        createManyExample(data: $data)
       }
     `,
     { data },

@@ -7,7 +7,9 @@ import { Logger } from '@nestjs/common';
 import { ExampleEntity } from './example.entity';
 import { ExampleService } from './example.service';
 import {
+  CreateManyExampleArgs,
   CreateOneExampleArgs,
+  FindManyExampleArgs,
   FindOneExampleArgs,
   UpdateOneExampleArgs,
 } from './example.args';
@@ -17,6 +19,20 @@ export class ExampleResolver {
   readonly logger = new Logger(ExampleResolver.name);
 
   constructor(private readonly service: ExampleService) {}
+
+  @Mutation(() => Number, { nullable: true })
+  async deleteManyExample(@Args() args: FindManyExampleArgs) {
+    const { filter } = FindManyExampleArgs.convert(args);
+    const deleted = await this.service.getModel().deleteMany({ where: filter });
+    return deleted?.count;
+  }
+
+  @Mutation(() => Number, { nullable: true })
+  async createManyExample(@Args() args: CreateManyExampleArgs) {
+    const { input } = CreateManyExampleArgs.convert(args);
+    const created = await this.service.getModel().createMany({ data: input });
+    return created.count;
+  }
 
   @Mutation(() => ExampleEntity, {
     nullable: true,

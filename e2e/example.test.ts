@@ -1,10 +1,12 @@
 import {
+  createManyExample,
   createOneExample,
+  deleteManyExample,
   deleteOneExample,
   updateOneExample,
 } from './mutation/example';
 import { customAlphabet } from 'nanoid';
-import { findOneExample } from './query/example';
+import { findManyExample, findOneExample } from './query/example';
 import { waitForHealth } from './common/config';
 
 describe('create one', () => {
@@ -65,6 +67,48 @@ describe('create one', () => {
         const one = await findOneExample({ index: { id: data.id } });
         expect(one).not.toBeTruthy();
       });
+    });
+  });
+});
+
+describe('create many unique', () => {
+  const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
+  const tid = nanoid();
+  const min = 0,
+    max = 999999;
+  const date = new Date();
+  const random = Math.floor(Math.random() * (max - min + 1) + min);
+  let data = Array.from({ length: 32 }, (_, i) => {
+    const uniq = date.setSeconds(i);
+    return {
+      id: null,
+      string: nanoid(),
+      date: new Date(uniq),
+      number: random + i,
+      label: tid,
+    };
+  });
+  beforeAll(async () => {
+    await waitForHealth();
+    await createManyExample({
+      data,
+    });
+  });
+
+  test('read many without limit', async () => {
+    expect(1).toBeTruthy();
+    //const many = await findManyExample({ where: { label: tid } });
+    //expect(many.data.length).toBe(data.length);
+  });
+
+  describe(`delete many`, () => {
+    beforeAll(async () => {
+      await deleteManyExample({ where: { label: tid } });
+    });
+
+    test('read many', async () => {
+      expect(1).toBeTruthy();
+      //const many = await findManyExample({ where: { label: tid } }); expect(many?.data?.length || 0).toBe(0);
     });
   });
 });

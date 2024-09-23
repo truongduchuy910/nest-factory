@@ -46,6 +46,11 @@ export class ExampleEntity implements ExampleInterface {
   })
   duplicate: number | null;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  label: string;
+
   constructor(partial: Partial<ExampleEntity>) {
     Object.assign(this, partial);
   }

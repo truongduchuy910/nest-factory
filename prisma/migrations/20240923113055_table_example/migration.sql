@@ -12,10 +12,23 @@ CREATE TABLE "Pris" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "string" TEXT NOT NULL,
-    "number" INTEGER NOT NULL,
+    "number" BIGINT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Pris_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "example" (
+    "id" SERIAL NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "string" TEXT NOT NULL,
+    "number" INTEGER NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "duplicate" INTEGER,
+    "label" TEXT,
+
+    CONSTRAINT "example_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -29,3 +42,12 @@ CREATE UNIQUE INDEX "Pris_number_key" ON "Pris"("number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Pris_date_key" ON "Pris"("date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "example_string_key" ON "example"("string");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "example_number_key" ON "example"("number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "example_date_key" ON "example"("date");

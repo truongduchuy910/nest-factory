@@ -11,7 +11,9 @@ import { typeDefs } from './neo.node';
 import { NeoEntity } from './neo.entity';
 
 @Module({
-  imports: [Neo4jModule.forFeature([{ name: NeoEntity.nodeName, typeDefs }])],
+  imports: [
+    Neo4jModule.forFeature([{ name: NeoEntity.nodeName, typeDefs }]),
+  ],
   providers: [NeoService, NeoResolver],
   exports: [NeoService, Neo4jModule],
 })

@@ -10,9 +10,9 @@ import { Neo4jModule } from 'nest-ogm';
 import { neo4jConfig } from './config/neo4j';
 import { NeoModule } from './neo/neo.module';
 import { MongoModule } from './mongo/mongo.module';
-import { PrismaService } from './prisma.service';
 import { PrisModule } from './pris/pris.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -25,5 +25,6 @@ import { PrismaModule } from './prisma/prisma.module';
     PrisModule,
     PrismaModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

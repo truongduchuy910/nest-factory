@@ -1,7 +1,7 @@
 import { createOneNeo, deleteOneNeo, updateOneNeo } from './mutation/neo';
 import { customAlphabet } from 'nanoid';
 import { findManyNeo, findOneNeo } from './query/neo';
-import { v4 as uuidv4 } from 'uuid';
+import { waitForHealth } from './common/config';
 
 describe('create', () => {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 8);
@@ -13,6 +13,7 @@ describe('create', () => {
   };
 
   beforeAll(async () => {
+    await waitForHealth();
     delete data.id;
     const created = await createOneNeo({
       data,
